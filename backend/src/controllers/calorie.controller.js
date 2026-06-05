@@ -1,6 +1,7 @@
 const axios = require('axios');
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://127.0.0.1:7860';
+console.log('[ML_SERVICE_URL]', ML_SERVICE_URL); // ← tambah ini
 
 // Nilai rata-rata dari dataset training (notebook GBR)
 // Dipakai sebagai fallback kalau field opsional tidak dikirim frontend

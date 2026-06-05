@@ -11,6 +11,9 @@ History.belongsTo(User, { foreignKey: 'UserId' });
 User.hasMany(Workout, { foreignKey: 'UserId' });
 Workout.belongsTo(User, { foreignKey: 'UserId' });
 
+User.hasMany(Favorite, { foreignKey: 'UserId' })
+Favorite.belongsTo(User, { foreignKey: 'UserId' })
+
 module.exports = {
   sequelize,
   User,

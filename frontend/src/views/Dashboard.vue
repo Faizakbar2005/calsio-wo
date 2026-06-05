@@ -364,18 +364,40 @@ export default {
 .toast-enter-from { opacity: 0; transform: translateX(40px); }
 .toast-leave-to   { opacity: 0; transform: translateX(40px); }
 
-/* ── Tab Bar ── */
 .tab-bar {
-  display: flex; gap: 4px; background: rgba(255,255,255,0.04); padding: 4px;
-  border-radius: 14px; width: fit-content; border: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  width: fit-content;      /* ← tetap pakai ini */
+  max-width: 100%;         /* ← tambah ini */
+  overflow-x: auto;        /* ← kalau di HP masih mepet, bisa scroll */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.tab-bar::-webkit-scrollbar { display: none; }
+
+
 .tab-btn {
-  padding: 8px 20px;
-  font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  background: transparent; border: none; color: rgba(255,255,255,0.35);
-  border-radius: 10px; cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; gap: 7px;
+  padding: 8px 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;   /* ← penting: cegah teks wrap */
+  flex-shrink: 0;        /* ← penting: tombol tidak mengecil */
 }
 .tab-icon { display: flex; align-items: center; opacity: 0.6; }
 .tab-desc { font-size: 0.62rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.22); }
@@ -425,6 +447,19 @@ export default {
 
 .animate-in { opacity: 0; transform: translateY(14px); animation: fadeUp 0.5s ease forwards; }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px 12px 60px;
+    gap: 16px;
+  }
 
-@media (max-width: 768px) { .main-content { padding: 24px 16px 60px; } }
+  .tab-btn {
+    padding: 7px 12px;
+    font-size: 0.78rem;
+  }
+
+  .tab-desc {
+    display: none; /* sembunyikan subtitle "Hari ini", "7 hari" di HP */
+  }
+}
 </style>

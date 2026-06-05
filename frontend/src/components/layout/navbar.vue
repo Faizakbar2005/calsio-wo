@@ -1,6 +1,18 @@
 <template>
   <nav class="navbar">
 
+    <!-- Toast Logout -->
+    <transition name="toast">
+      <div v-if="toast.show" class="navbar-toast">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        {{ toast.message }}
+      </div>
+    </transition>
+
     <!-- KIRI: Brand -->
     <router-link to="/dashboard" class="nav-brand">
       <div class="brand-mark">
@@ -145,6 +157,7 @@ export default {
       menuOpen  : false,
       mobileOpen: false,
       userName  : '',
+      toast     : { show: false, message: '', _timer: null },
     }
   },
 
@@ -172,12 +185,22 @@ export default {
     handleLogout() {
       this.menuOpen   = false
       this.mobileOpen = false
+
+      // Hapus semua data lokal
       localStorage.removeItem('calsio_token')
       localStorage.removeItem('calsio_user_setup')
       localStorage.removeItem('calsio_user_profile')
       localStorage.removeItem('calsio_user_id')
       localStorage.removeItem('calsio_visited')
-      this.$router.push({ name: 'Landing' })
+
+      // Tampilkan toast, lalu redirect setelah 1.8 detik
+      if (this.toast._timer) clearTimeout(this.toast._timer)
+      this.toast.show    = true
+      this.toast.message = 'Berhasil logout. Sampai jumpa! 👋'
+      this.toast._timer  = setTimeout(() => {
+        this.toast.show = false
+        this.$router.push({ name: 'Landing' })
+      }, 1800)
     },
 
     handleClickOutside(e) {
@@ -194,13 +217,14 @@ export default {
 
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
+    if (this.toast._timer) clearTimeout(this.toast._timer)
   },
 
   watch: {
     $route() {
       this.mobileOpen = false
       this.menuOpen   = false
-      this.loadUserName() // refresh nama setiap pindah halaman
+      this.loadUserName()
     }
   }
 }
@@ -220,6 +244,31 @@ export default {
   background: rgba(8,10,15,0.9);
   backdrop-filter: blur(14px);
 }
+
+/* ── Toast Logout ───────────────────────── */
+.navbar-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border-radius: 12px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.35);
+  color: #f87171;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  pointer-events: none;
+}
+.toast-enter-active, .toast-leave-active { transition: all 0.35s cubic-bezier(.4,0,.2,1); }
+.toast-enter-from { opacity: 0; transform: translateX(40px); }
+.toast-leave-to   { opacity: 0; transform: translateX(40px); }
 
 /* ── Brand ─────────────────────────────── */
 .nav-brand {

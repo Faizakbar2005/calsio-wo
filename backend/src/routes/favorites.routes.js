@@ -24,6 +24,7 @@ router.post('/', async (req, res) => {
     })
     res.status(201).json(row)
   } catch (err) {
+    console.error('[favorites POST error]', err) // ← tambah baris ini
     res.status(500).json({ error: err.message })
   }
 })

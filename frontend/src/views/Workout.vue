@@ -142,7 +142,7 @@ export default {
       modalVisible      : false,
       toastVisible      : false,
       bodyView          : 'front',
-      featureImportance : [],   // ← selalu diinisialisasi di sini
+      featureImportance : [],
 
       intensityLevels: [
         { value: 'low',    label: 'Ringan', color: '#22c55e' },
@@ -222,35 +222,34 @@ export default {
     async predictCalories() {
       if (!this.selectedExercise) return
 
-      // Reset semua state sebelum fetch
-      this.modalVisible     = true
-      this.loading          = true
-      this.calories         = null
-      this.saved            = false
-      this.errorMsg         = ''
-      this.featureImportance = []   // ← reset dulu agar tidak tampilkan data lama
+      this.modalVisible      = true
+      this.loading           = true
+      this.calories          = null
+      this.saved             = false
+      this.errorMsg          = ''
+      this.featureImportance = []
 
       const p      = this.userProfile
       const avgBpm = this.getAvgBpm(this.intensity)
 
-const payload = {
-  age    : p.age,
-  gender : p.gender,
-  weight : p.weight,
-  height : p.height > 10 ? p.height / 100 : p.height,  // ← pastikan dalam meter
+      const payload = {
+        age    : p.age,
+        gender : p.gender,
+        weight : p.weight,
+        height : p.height > 10 ? p.height / 100 : p.height,
 
-  maxBpm    : p.maxBpm,
-  avgBpm,
-  restingBpm: p.restingBpm,
+        maxBpm    : p.maxBpm,
+        avgBpm,
+        restingBpm: p.restingBpm,
 
-  sessionDuration: parseFloat((this.duration / 60).toFixed(4)),
-  workoutType    : this.selectedExercise.workoutType,
+        sessionDuration: parseFloat((this.duration / 60).toFixed(4)),
+        workoutType    : this.selectedExercise.workoutType,
 
-  experienceLevel : p.experienceLevel  || 2,      // ← jangan null, pakai default
-  fatPercentage   : p.fatPercentage    || 24.98,
-  waterIntake     : p.waterIntake      || 2.63,
-  workoutFrequency: p.workoutFrequency || 3,
-}
+        experienceLevel : p.experienceLevel  || 2,
+        fatPercentage   : p.fatPercentage    || 24.98,
+        waterIntake     : p.waterIntake      || 2.63,
+        workoutFrequency: p.workoutFrequency || 3,
+      }
 
       try {
         const res = await axios.post(`${API_URL}/api/calories/predict`, payload)
@@ -259,9 +258,8 @@ const payload = {
           const base      = res.data.data.caloriesBurned
           const metFactor = getMETFactor(this.selectedExercise.muscles[0], this.selectedExercise.workoutType)
 
-          // Assign bersamaan agar Vue update sekali render
           this.calories          = Math.round(base * metFactor)
-          this.featureImportance = [...(res.data.data.featureImportance || [])]  // spread untuk reaktivitas
+          this.featureImportance = [...(res.data.data.featureImportance || [])]
         } else {
           throw new Error(res.data.message || 'Prediksi gagal')
         }
@@ -269,7 +267,7 @@ const payload = {
       } catch (err) {
         if (err.code === 'ERR_NETWORK' || err.response?.status === 503) {
           this.calories          = this._fallback()
-          this.featureImportance = []   // fallback: modal akan pakai data statis
+          this.featureImportance = []
           this.errorMsg          = 'ML service offline — hasil estimasi manual (MET)'
         } else {
           this.errorMsg = err.response?.data?.message || err.message
@@ -284,28 +282,26 @@ const payload = {
       return Math.round(met * this.userProfile.weight * (this.duration / 60))
     },
 
-async saveSession() {
-  try {
-    const token = localStorage.getItem('calsio_token') || localStorage.getItem('access_token')
-    
-    await axios.post(`${API_URL}/api/history`, {
-      calories     : this.calories,
-      duration     : this.duration,
-      exercise_name: this.selectedExercise?.name         || null,
-      muscle_group : this.selectedExercise?.muscles?.[0] || null,
-      workout_type : this.selectedExercise?.workoutType  || null,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    async saveSession() {
+      try {
+        const token = localStorage.getItem('calsio_token') || localStorage.getItem('access_token')
+
+        await axios.post(`${API_URL}/api/history`, {
+          calories     : this.calories,
+          duration     : this.duration,
+          exercise_name: this.selectedExercise?.name         || null,
+          muscle_group : this.selectedExercise?.muscles?.[0] || null,
+          workout_type : this.selectedExercise?.workoutType  || null,
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        this.saved        = true
+        this.modalVisible = false
+        this.toastVisible = true
+      } catch (err) {
+        console.error('Gagal simpan:', err.message)
       }
-    })
-    this.saved        = true
-    this.modalVisible = false
-    this.toastVisible = true
-  } catch (err) {
-    console.error('Gagal simpan:', err.message)
-  }
-},
+    },
 
     goToDashboard() {
       this.toastVisible = false
@@ -336,13 +332,22 @@ async saveSession() {
 
 .workout-wrapper { font-family: 'Barlow', sans-serif; min-height: 100vh; background: #080a0f; color: #fff; position: relative; overflow-x: hidden; }
 .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(234,179,8,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(234,179,8,0.025) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; z-index: 0; }
-.main-content { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: 44px 48px 100px; display: flex; flex-direction: column; gap: 28px; }
+.main-content { position: relative; z-index: 1; max-width: 1600px; margin: 0 auto; padding: 44px 48px 100px; display: flex; flex-direction: column; gap: 28px; }
 .animate-in { opacity: 0; transform: translateY(14px); animation: fadeUp 0.4s ease forwards; }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 .page-eyebrow { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em; color: #eab308; margin-bottom: 6px; }
 .page-title   { font-family: 'Barlow Condensed', sans-serif; font-size: 2.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1; }
 .page-sub     { margin-top: 8px; font-size: 0.85rem; color: rgba(255,255,255,0.3); }
-.workout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
-@media (max-width: 1100px) { .workout-grid { grid-template-columns: 1fr; } }
+
+/* Main two-panel grid: WorkoutSteps (left, wide) + WorkoutBodyVisualizer (right, fixed) */
+.workout-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1200px) { .workout-grid { grid-template-columns: 1fr 340px; } }
+@media (max-width: 1024px) { .workout-grid { grid-template-columns: 1fr; } }
 @media (max-width: 900px)  { .main-content { padding: 28px 20px 60px; } }
 </style>

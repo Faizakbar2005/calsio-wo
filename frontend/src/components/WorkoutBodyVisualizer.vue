@@ -82,85 +82,6 @@
       </div>
     </div>
 
-    <!-- ══ WORKOUT TIMER CARD ══ -->
-    <div class="timer-card" v-if="selectedExercise">
-      <div class="step-bar"></div>
-
-      <div class="timer-header">
-        <div class="timer-title-wrap">
-          <span class="timer-eyebrow">{{ timerPhaseLabel }}</span>
-          <span class="timer-exercise">{{ selectedExercise.name }}</span>
-        </div>
-        <div class="timer-set-info">
-          Set <strong>{{ timerCurrentSet }}</strong> / {{ sets }}
-        </div>
-      </div>
-
-      <div class="timer-ring-wrap">
-        <svg class="timer-ring" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/>
-          <circle
-            cx="60" cy="60" r="52" fill="none"
-            :stroke="timerPhase === 'rest' ? '#22c55e' : '#eab308'"
-            stroke-width="6" stroke-linecap="round"
-            :stroke-dasharray="timerCircumference"
-            :stroke-dashoffset="timerDashOffset"
-            transform="rotate(-90 60 60)"
-            style="transition: stroke-dashoffset 1s linear, stroke 0.3s"
-          />
-        </svg>
-        <div class="timer-center">
-          <span class="timer-digits">{{ timerFormatted }}</span>
-          <span class="timer-phase-dot" :class="timerPhase"></span>
-        </div>
-      </div>
-
-      <div class="timer-controls">
-        <button class="tc-btn secondary" @click="timerReset" title="Reset">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-        </button>
-        <button class="tc-btn primary" @click="timerToggle">
-          <svg v-if="!timerRunning" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-        </button>
-        <button class="tc-btn secondary" @click="timerSkip" title="Skip">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
-        </button>
-      </div>
-
-      <div class="set-dots">
-        <span
-          v-for="i in sets" :key="i"
-          :class="['set-dot', i < timerCurrentSet ? 'done' : i === timerCurrentSet ? 'active' : '']"
-        ></span>
-      </div>
-
-      <div class="timer-config">
-        <div class="tc-conf">
-          <span class="tc-conf-label">⏱ Durasi set</span>
-          <div class="tc-conf-ctrl">
-            <button @click="timerSetDuration = Math.max(10, timerSetDuration - 5)">−</button>
-            <span>{{ timerSetDuration }}s</span>
-            <button @click="timerSetDuration += 5">+</button>
-          </div>
-        </div>
-        <div class="tc-conf">
-          <span class="tc-conf-label">😮‍💨 Rest</span>
-          <div class="tc-conf-ctrl">
-            <button @click="timerRestDuration = Math.max(10, timerRestDuration - 5)">−</button>
-            <span>{{ timerRestDuration }}s</span>
-            <button @click="timerRestDuration += 5">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="timer-done" v-if="timerCompleted">
-        <span class="done-emoji">🎉</span>
-        <span class="done-text">Semua set selesai!</span>
-        <button class="done-restart" @click="timerReset">Ulangi</button>
-      </div>
-    </div>
-
     <!-- Exercise Info Card -->
     <div class="info-card" v-if="selectedExercise">
       <div class="info-card-bar"></div>
@@ -168,7 +89,7 @@
         <div class="info-icon-wrap">
           <span v-html="getExerciseIcon(selectedExercise.workoutType)"></span>
         </div>
-        <div>
+        <div class="info-text-wrap">
           <div class="info-exname">{{ selectedExercise.name }}</div>
           <div class="info-excat">{{ selectedEquipment === 'no_equipment' ? 'Tanpa Alat' : 'Dumbbell' }}</div>
         </div>
@@ -240,52 +161,12 @@ export default {
     avgBpm           : { type: Number,  default: 0 },
   },
 
-  data() {
-    return {
-      // Timer state
-      timerPhase      : 'set',
-      timerRunning    : false,
-      timerCompleted  : false,
-      timerCurrentSet : 1,
-      timerSetDuration : 45,
-      timerRestDuration: 60,
-      timerTimeLeft   : 45,
-      timerTicker     : null,
-    }
-  },
-
   computed: {
     activeMuscles()      { return this.selectedExercise?.muscles || [] },
     activeMuscleLabels() { return this.activeMuscles.slice(0, 3) },
-
-    timerCircumference() { return 2 * Math.PI * 52 },
-    timerTotalDuration() { return this.timerPhase === 'set' ? this.timerSetDuration : this.timerRestDuration },
-    timerDashOffset()    {
-      const ratio = this.timerTimeLeft / this.timerTotalDuration
-      return this.timerCircumference * (1 - ratio)
-    },
-    timerFormatted() {
-      const m = Math.floor(this.timerTimeLeft / 60)
-      const s = this.timerTimeLeft % 60
-      return `${m}:${s.toString().padStart(2, '0')}`
-    },
-    timerPhaseLabel() {
-      if (this.timerCompleted) return 'Selesai'
-      return this.timerPhase === 'set' ? 'Waktu Set' : 'Waktu Rest'
-    },
   },
-
-  watch: {
-    selectedExercise()    { this.timerReset() },
-    sets()                { this.timerReset() },
-    timerSetDuration(v)   { if (!this.timerRunning && this.timerPhase === 'set')  this.timerTimeLeft = v },
-    timerRestDuration(v)  { if (!this.timerRunning && this.timerPhase === 'rest') this.timerTimeLeft = v },
-  },
-
-  beforeUnmount() { this.timerStopTicker() },
 
   methods: {
-    // ── Body visualizer ──
     ma(name) {
       if (!this.selectedExercise) return false
       const muscles     = this.selectedExercise.muscles || []
@@ -296,82 +177,6 @@ export default {
     },
     getExerciseIcon(t) { return ic[t?.toLowerCase()] || ic.strength },
     workoutTypeColor(t){ return { Strength: '#60a5fa', Cardio: '#34d399', HIIT: '#f87171', Yoga: '#a78bfa' }[t] || '#eab308' },
-
-    // ── Timer ──
-    timerToggle() {
-      if (this.timerCompleted) return
-      if (this.timerRunning) {
-        this.timerStopTicker()
-      } else {
-        this.timerStartTicker()
-      }
-      this.timerRunning = !this.timerRunning
-    },
-
-    timerStartTicker() {
-      this.timerTicker = setInterval(() => {
-        if (this.timerTimeLeft > 0) {
-          this.timerTimeLeft--
-        } else {
-          this.timerOnPhaseEnd()
-        }
-      }, 1000)
-    },
-
-    timerStopTicker() {
-      clearInterval(this.timerTicker)
-      this.timerTicker = null
-    },
-
-    timerOnPhaseEnd() {
-      this.timerStopTicker()
-      this.timerRunning = false
-      this.timerBeep()
-
-      if (this.timerPhase === 'set') {
-        this.timerPhase    = 'rest'
-        this.timerTimeLeft = this.timerRestDuration
-        this.$nextTick(() => { this.timerRunning = true; this.timerStartTicker() })
-      } else {
-        if (this.timerCurrentSet < this.sets) {
-          this.timerCurrentSet++
-          this.timerPhase    = 'set'
-          this.timerTimeLeft = this.timerSetDuration
-          this.$nextTick(() => { this.timerRunning = true; this.timerStartTicker() })
-        } else {
-          this.timerCompleted = true
-        }
-      }
-    },
-
-    timerSkip() {
-      this.timerStopTicker()
-      this.timerRunning = false
-      this.timerOnPhaseEnd()
-    },
-
-    timerReset() {
-      this.timerStopTicker()
-      this.timerRunning    = false
-      this.timerCompleted  = false
-      this.timerCurrentSet = 1
-      this.timerPhase      = 'set'
-      this.timerTimeLeft   = this.timerSetDuration
-    },
-
-    timerBeep() {
-      try {
-        const ctx  = new (window.AudioContext || window.webkitAudioContext)()
-        const osc  = ctx.createOscillator()
-        const gain = ctx.createGain()
-        osc.connect(gain); gain.connect(ctx.destination)
-        osc.frequency.value = this.timerPhase === 'set' ? 880 : 440
-        osc.type = 'sine'
-        gain.gain.setValueAtTime(0.3, ctx.currentTime)
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
-        osc.start(); osc.stop(ctx.currentTime + 0.4)
-      } catch {}
-    },
   },
 }
 </script>
@@ -379,7 +184,14 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
 
-.right-col { display: flex; flex-direction: column; gap: 14px; }
+/* Right column: sticky so body visualizer stays on screen while user scrolls left panel */
+.right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 76px; /* match navbar height */
+}
 
 /* ── Body Card ── */
 .body-card { background: #0d1117; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 20px; position: relative; overflow: hidden; }
@@ -404,60 +216,13 @@ export default {
 .ml-name { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(234,179,8,0.8); }
 @keyframes dot-blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-/* ── Timer Card ── */
-.timer-card {
-  background: #0d1117; border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 18px; padding: 20px; position: relative; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-}
-.timer-header { width: 100%; display: flex; align-items: flex-start; justify-content: space-between; }
-.timer-title-wrap { display: flex; flex-direction: column; gap: 2px; }
-.timer-eyebrow  { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(255,255,255,0.25); }
-.timer-exercise { font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.7); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.timer-set-info { font-size: 0.7rem; color: rgba(255,255,255,0.3); }
-.timer-set-info strong { color: #eab308; }
-
-.timer-ring-wrap { position: relative; width: 120px; height: 120px; }
-.timer-ring      { width: 120px; height: 120px; }
-.timer-center    { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-.timer-digits    { font-family: 'Barlow Condensed', sans-serif; font-size: 2rem; font-weight: 900; color: #fff; line-height: 1; }
-.timer-phase-dot { width: 7px; height: 7px; border-radius: 50%; }
-.timer-phase-dot.set  { background: #eab308; animation: blink 1s ease-in-out infinite; }
-.timer-phase-dot.rest { background: #22c55e; animation: blink 1.5s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-.timer-controls { display: flex; align-items: center; gap: 10px; }
-.tc-btn { border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.tc-btn.primary   { width: 52px; height: 52px; background: #eab308; color: #000; box-shadow: 0 4px 20px rgba(234,179,8,0.3); }
-.tc-btn.primary:hover { background: #facc15; transform: scale(1.05); }
-.tc-btn.secondary { width: 38px; height: 38px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.4); }
-.tc-btn.secondary:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
-
-.set-dots { display: flex; gap: 6px; }
-.set-dot  { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s; }
-.set-dot.done   { background: rgba(34,197,94,0.6); }
-.set-dot.active { background: #eab308; box-shadow: 0 0 8px rgba(234,179,8,0.5); transform: scale(1.2); }
-
-.timer-config { width: 100%; display: flex; gap: 8px; }
-.tc-conf { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
-.tc-conf-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.25); }
-.tc-conf-ctrl  { display: flex; align-items: center; justify-content: space-between; }
-.tc-conf-ctrl button { width: 24px; height: 24px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); font-size: 1rem; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
-.tc-conf-ctrl button:hover { border-color: rgba(234,179,8,0.4); color: #eab308; }
-.tc-conf-ctrl span { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; color: #fff; }
-
-.timer-done { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; width: 100%; }
-.done-emoji { font-size: 1.5rem; }
-.done-text  { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #22c55e; }
-.done-restart { margin-top: 4px; padding: 6px 16px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; color: #22c55e; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; }
-.done-restart:hover { background: rgba(34,197,94,0.2); }
-
 /* ── Info Card ── */
 .info-card     { background: #0d1117; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 20px; position: relative; overflow: hidden; }
 .info-card-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(234,179,8,0.4), transparent); }
 .info-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .info-icon-wrap { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2); display: flex; align-items: center; justify-content: center; color: #eab308; }
-.info-exname { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; line-height: 1; }
+.info-text-wrap { flex: 1; min-width: 0; }
+.info-exname { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .info-excat  { font-size: 0.65rem; color: rgba(255,255,255,0.3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
 .info-type-pill { margin-left: auto; flex-shrink: 0; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--pill-color, #eab308); background: color-mix(in srgb, var(--pill-color, #eab308) 15%, transparent); border: 1px solid color-mix(in srgb, var(--pill-color, #eab308) 40%, transparent); padding: 4px 10px; border-radius: 999px; }
 .info-desc { font-size: 0.8rem; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 14px; }
@@ -486,6 +251,16 @@ export default {
 .btn-reset  { padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: rgba(255,255,255,0.35); font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
 .btn-reset:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
 
-@media (max-width: 1100px) { .right-col { display: grid; grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px)  { .right-col { grid-template-columns: 1fr; } .rc-actions { flex-wrap: wrap; } }
+/* Responsive: di bawah 1024px, right-col lepas dari sticky dan ikut flow normal */
+@media (max-width: 1024px) {
+  .right-col {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .right-col { grid-template-columns: 1fr; }
+  .rc-actions { flex-wrap: wrap; }
+}
 </style>
