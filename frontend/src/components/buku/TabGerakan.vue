@@ -1,16 +1,22 @@
 <template>
   <div class="tab-gerakan">
 
-    <!-- Search + Filter -->
-    <div class="search-filter-row">
+    <!-- Toolbar -->
+    <div class="toolbar">
       <div class="search-wrap">
         <span class="search-icon">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
         </span>
         <input v-model="searchQuery" placeholder="Cari gerakan..." class="search-input" />
+        <button v-if="searchQuery" @click="searchQuery = ''" class="search-clear">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
+
       <div class="filter-chips">
         <button
           v-for="cat in muscleCategories"
@@ -21,65 +27,84 @@
       </div>
     </div>
 
+    <!-- Count -->
+    <div class="result-count" v-if="filteredExercises.length > 0">
+      <span>{{ filteredExercises.length }} gerakan</span>
+      <span v-if="filterMuscle || searchQuery" class="count-filter">
+        · filter aktif
+        <button @click="filterMuscle=''; searchQuery=''" class="clear-filter">Reset</button>
+      </span>
+    </div>
+
     <!-- Exercise Grid -->
     <div class="exercise-grid">
       <div
-        v-for="ex in filteredExercises"
+        v-for="(ex, idx) in filteredExercises"
         :key="ex.name"
         @click="$emit('open-detail', ex)"
         class="exercise-card"
+        :style="{ animationDelay: (idx * 0.04) + 's' }"
       >
-        <div class="ex-illus" :style="{ background: ex.color + '12' }">
-          <!-- Border accent top -->
-          <div class="ex-illus-accent" :style="{ background: ex.color }"></div>
+        <!-- Top accent -->
+        <div class="ex-accent" :style="{ background: ex.color }"></div>
 
-          <!-- SVG icon dari data -->
+        <!-- Illustration -->
+        <div class="ex-illus" :style="{ background: ex.color + '0d' }">
           <div class="ex-icon" :style="{ color: ex.color }" v-html="ex.icon"></div>
-
-          <!-- Difficulty badge -->
           <div class="ex-difficulty" :class="ex.level">{{ levelLabel[ex.level] }}</div>
         </div>
 
+        <!-- Body -->
         <div class="ex-body">
-          <h3 class="ex-name">{{ ex.name }}</h3>
-          <div class="ex-tags">
-            <span class="ex-tag muscle">
-              <span class="tag-icon" v-html="ex.muscleIcon" :style="{ color: ex.color }"></span>
-              {{ ex.muscle }}
-            </span>
-            <span class="ex-tag equip">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4"/>
-              </svg>
-              {{ ex.equipment }}
-            </span>
-          </div>
-          <div class="ex-meta">
-            <span class="ex-met">MET {{ ex.met }}</span>
-            <span class="ex-arrow">
+          <div class="ex-body-top">
+            <h3 class="ex-name">{{ ex.name }}</h3>
+            <div class="ex-arrow" :style="{ color: ex.color }">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
               </svg>
+            </div>
+          </div>
+
+          <div class="ex-tags">
+            <span class="ex-tag muscle" :style="{ color: ex.color, background: ex.color + '12', borderColor: ex.color + '25' }">
+              <span class="tag-icon" v-html="ex.muscleIcon" :style="{ color: ex.color }"></span>
+              {{ ex.muscle }}
             </span>
+            <span class="ex-tag equip">{{ ex.equipment }}</span>
+          </div>
+
+          <div class="ex-footer">
+            <div class="ex-met-wrap">
+              <span class="ex-met-label">MET</span>
+              <span class="ex-met-val" :style="{ color: ex.color }">{{ ex.met }}</span>
+            </div>
+            <div class="ex-kcal">
+              <span>≈{{ Math.round(ex.met * 70 * 0.5) }} kcal</span>
+              <span class="ex-kcal-note">/ 30 min</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Empty state -->
+    <!-- Empty -->
     <div v-if="filteredExercises.length === 0" class="empty-state">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        <line x1="8" y1="11" x2="14" y2="11"/>
-      </svg>
-      <p>Gerakan tidak ditemukan</p>
+      <div class="empty-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+      </div>
+      <p class="empty-title">Gerakan tidak ditemukan</p>
+      <p class="empty-sub">Coba ubah filter atau kata kunci pencarian</p>
+      <button @click="filterMuscle=''; searchQuery=''" class="empty-reset">Reset Filter</button>
     </div>
 
   </div>
 </template>
 
 <script>
-import { exercises, muscleCategories } from './bukuData.js'
+import { exercises, muscleCategories } from '../../services/bukuData.js'
 
 export default {
   name: 'TabGerakan',
@@ -118,135 +143,222 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap');
 
-.tab-gerakan { display: flex; flex-direction: column; gap: 20px; }
+.tab-gerakan { display: flex; flex-direction: column; gap: 18px; }
 
-/* ── Search & Filter ── */
-.search-filter-row { display: flex; flex-direction: column; gap: 12px; }
+/* ── Toolbar ── */
+.toolbar {
+  display: flex; flex-direction: column; gap: 12px;
+}
 
-.search-wrap { position: relative; max-width: 400px; }
+.search-wrap {
+  position: relative; max-width: 380px;
+  display: flex; align-items: center;
+}
 .search-icon {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  color: rgba(255,255,255,0.25); display: flex; align-items: center;
+  position: absolute; left: 14px;
+  color: rgba(255,255,255,0.2);
+  display: flex; align-items: center;
+  pointer-events: none;
 }
 .search-input {
-  width: 100%; padding: 12px 14px 12px 42px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px; color: #fff;
+  width: 100%; padding: 12px 40px 12px 40px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 11px; color: #fff;
   font-family: 'Barlow', sans-serif; font-size: 0.9rem; outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background 0.2s;
 }
-.search-input:focus { border-color: rgba(234,179,8,0.5); }
-.search-input::placeholder { color: rgba(255,255,255,0.2); }
+.search-input:focus {
+  border-color: rgba(234,179,8,0.4);
+  background: rgba(255,255,255,0.05);
+}
+.search-input::placeholder { color: rgba(255,255,255,0.18); }
+.search-clear {
+  position: absolute; right: 12px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.25); cursor: pointer;
+  display: flex; align-items: center;
+  transition: color 0.2s;
+}
+.search-clear:hover { color: rgba(255,255,255,0.6); }
 
-.filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
   padding: 6px 14px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 999px; color: rgba(255,255,255,0.4);
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  cursor: pointer; transition: all 0.2s;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px; color: rgba(255,255,255,0.35);
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  cursor: pointer; transition: all 0.18s ease;
 }
-.chip:hover { border-color: rgba(234,179,8,0.3); color: rgba(255,255,255,0.7); }
-.chip.active { background: rgba(234,179,8,0.12); border-color: #eab308; color: #eab308; }
+.chip:hover {
+  border-color: rgba(234,179,8,0.25);
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.055);
+}
+.chip.active {
+  background: rgba(234,179,8,0.1);
+  border-color: rgba(234,179,8,0.35);
+  color: #eab308;
+}
+
+/* Result count */
+.result-count {
+  font-size: 0.75rem; color: rgba(255,255,255,0.22);
+  display: flex; align-items: center; gap: 6px;
+}
+.count-filter { color: rgba(234,179,8,0.5); display: flex; align-items: center; gap: 6px; }
+.clear-filter {
+  background: none; border: none;
+  color: rgba(234,179,8,0.7); font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  cursor: pointer; text-decoration: underline; padding: 0;
+  transition: color 0.2s;
+}
+.clear-filter:hover { color: #eab308; }
 
 /* ── Grid ── */
 .exercise-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+  gap: 14px;
 }
 
 /* ── Card ── */
 .exercise-card {
-  background: #0d1117; border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px; overflow: hidden; cursor: pointer;
-  transition: all 0.25s ease;
+  background: #0c0f18;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px; overflow: hidden; cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  animation: cardIn 0.35s ease both;
 }
 .exercise-card:hover {
-  border-color: rgba(234,179,8,0.3);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
 }
+@keyframes cardIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Illustration area */
-.ex-illus {
-  position: relative; height: 120px;
-  display: flex; align-items: center; justify-content: center;
+.ex-accent {
+  height: 2px; opacity: 0.6;
+  transition: opacity 0.2s;
 }
-.ex-illus-accent {
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  opacity: 0.7;
+.exercise-card:hover .ex-accent { opacity: 1; }
+
+.ex-illus {
+  height: 118px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: background 0.25s;
 }
 .ex-icon {
   display: flex; align-items: center; justify-content: center;
-  opacity: 0.85;
-  filter: drop-shadow(0 0 12px currentColor);
-  transition: transform 0.25s, opacity 0.25s;
+  opacity: 0.8;
+  transition: transform 0.25s ease, opacity 0.25s;
 }
 .exercise-card:hover .ex-icon {
-  transform: scale(1.08);
+  transform: scale(1.1);
   opacity: 1;
+  filter: drop-shadow(0 0 10px currentColor);
 }
 
-/* Difficulty badge */
 .ex-difficulty {
   position: absolute; top: 10px; right: 10px;
-  font-size: 0.62rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  padding: 3px 10px; border-radius: 999px;
+  font-size: 0.6rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 3px 9px; border-radius: 999px;
 }
-.ex-difficulty.beginner     { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
-.ex-difficulty.intermediate { background: rgba(234,179,8,0.12);  color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
-.ex-difficulty.advanced     { background: rgba(239,68,68,0.12);   color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+.ex-difficulty.beginner     { background: rgba(34,197,94,0.1);  color: #22c55e; border: 1px solid rgba(34,197,94,0.22); }
+.ex-difficulty.intermediate { background: rgba(234,179,8,0.1);  color: #eab308; border: 1px solid rgba(234,179,8,0.22); }
+.ex-difficulty.advanced     { background: rgba(239,68,68,0.1);   color: #ef4444; border: 1px solid rgba(239,68,68,0.22); }
 
-/* Body */
-.ex-body { padding: 16px; }
+.ex-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+
+.ex-body-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
 .ex-name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.1rem; font-weight: 900;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  color: #fff; margin-bottom: 10px;
-}
-.ex-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-.ex-tag {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 0.65rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 4px 10px; border-radius: 999px;
-}
-.ex-tag.muscle { background: rgba(234,179,8,0.08); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.1); }
-.ex-tag.equip  { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.08); }
-
-.tag-icon {
-  display: flex; align-items: center;
-  flex-shrink: 0;
-}
-/* scale down muscle icon inside tag */
-.tag-icon :deep(svg) { width: 12px; height: 12px; }
-
-.ex-meta { display: flex; align-items: center; justify-content: space-between; }
-.ex-met {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.82rem; font-weight: 700;
-  color: rgba(255,255,255,0.25);
-  letter-spacing: 0.05em;
+  font-size: 1.08rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: #fff; line-height: 1.1;
 }
 .ex-arrow {
-  color: rgba(234,179,8,0.4); display: flex;
-  transition: transform 0.2s, color 0.2s;
+  display: flex; flex-shrink: 0;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.2s;
+  margin-top: 2px;
 }
-.exercise-card:hover .ex-arrow { transform: translateX(4px); color: #eab308; }
+.exercise-card:hover .ex-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}
+
+.ex-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.ex-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.63rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 4px 10px; border-radius: 6px; border: 1px solid;
+}
+.ex-tag.muscle { }
+.ex-tag.equip {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.28);
+}
+.tag-icon { display: flex; align-items: center; flex-shrink: 0; }
+.tag-icon :deep(svg) { width: 11px; height: 11px; }
+
+.ex-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.ex-met-wrap { display: flex; align-items: baseline; gap: 5px; }
+.ex-met-label {
+  font-size: 0.6rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.2);
+}
+.ex-met-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 900;
+}
+.ex-kcal {
+  display: flex; align-items: baseline; gap: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.82rem; font-weight: 700;
+  color: rgba(255,255,255,0.22);
+}
+.ex-kcal-note { font-size: 0.62rem; color: rgba(255,255,255,0.14); }
 
 /* ── Empty ── */
 .empty-state {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 12px; padding: 60px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 72px 20px; text-align: center;
 }
-.empty-state p { color: rgba(255,255,255,0.2); font-size: 0.9rem; }
+.empty-icon { margin-bottom: 4px; }
+.empty-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.2);
+}
+.empty-sub { font-size: 0.78rem; color: rgba(255,255,255,0.15); }
+.empty-reset {
+  margin-top: 8px; padding: 8px 20px;
+  background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.25);
+  border-radius: 8px; color: #eab308;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  cursor: pointer; transition: all 0.2s;
+}
+.empty-reset:hover { background: rgba(234,179,8,0.14); }
 
 @media (max-width: 600px) {
-  .exercise-grid { grid-template-columns: 1fr 1fr; }
+  .exercise-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+@media (max-width: 400px) {
+  .exercise-grid { grid-template-columns: 1fr; }
 }
 </style>

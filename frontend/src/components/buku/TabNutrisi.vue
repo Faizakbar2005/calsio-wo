@@ -1,47 +1,68 @@
 <template>
   <div class="nutrisi-wrap">
 
-    <!-- ── MAKRONUTRIEN SECTION ─────────────────────────────────── -->
+    <!-- ── MAKRONUTRIEN ── -->
     <div class="section-header">
-      <div class="section-label-line"></div>
-      <span class="section-label">Makronutrien</span>
+      <div class="sh-left">
+        <div class="sh-bar"></div>
+        <div>
+          <span class="sh-eyebrow">Fondasi Diet</span>
+          <h2 class="sh-title">Makronutrien</h2>
+        </div>
+      </div>
+      <p class="sh-desc">Tiga pilar utama nutrisi yang menentukan energi, pemulihan, dan komposisi tubuh</p>
     </div>
 
     <div class="makro-row">
-      <div v-for="makro in makronutrien" :key="makro.name" class="makro-card" :style="{ '--accent': makro.color }">
-        <div class="makro-top">
-          <div class="makro-icon-wrap" :style="{ background: makro.color + '15', border: `1px solid ${makro.color}30`, color: makro.color }">
+      <div
+        v-for="makro in makronutrien"
+        :key="makro.name"
+        class="makro-card"
+        :style="{ '--accent': makro.color }"
+      >
+        <div class="makro-accent-bar"></div>
+        <div class="makro-glow"></div>
+
+        <div class="makro-header">
+          <div class="makro-icon-wrap" :style="{ background: makro.color + '12', border: `1px solid ${makro.color}25`, color: makro.color }">
             <span v-html="makro.icon"></span>
           </div>
-          <div class="makro-info">
-            <div class="makro-name">{{ makro.name }}</div>
-            <div class="makro-kcal">{{ makro.kcalPerGram }} kcal/gram</div>
+          <div class="makro-pct" :style="{ color: makro.color }">
+            <span class="makro-pct-num">{{ makro.pct }}</span>
+            <span class="makro-pct-unit">%</span>
           </div>
-          <div class="makro-pct-badge" :style="{ color: makro.color, background: makro.color + '12', border: `1px solid ${makro.color}25` }">
-            {{ makro.pct }}%
-          </div>
+        </div>
+
+        <div class="makro-name-row">
+          <h3 class="makro-name">{{ makro.name }}</h3>
+          <span class="makro-kcal">{{ makro.kcalPerGram }} kcal/g</span>
         </div>
 
         <div class="makro-bar-wrap">
           <div class="makro-bar-track">
-            <div class="makro-bar-fill" :style="{ width: makro.pct + '%', background: `linear-gradient(90deg, ${makro.color}99, ${makro.color})` }"></div>
+            <div class="makro-bar-fill" :style="{ width: makro.pct + '%', background: makro.color }"></div>
           </div>
-          <span class="makro-bar-label">{{ makro.pct }}% dari kebutuhan harian</span>
         </div>
 
         <p class="makro-desc">{{ makro.desc }}</p>
       </div>
     </div>
 
-    <!-- ── TIPS SECTION ─────────────────────────────────────────── -->
-    <div class="section-header">
-      <div class="section-label-line"></div>
-      <span class="section-label">Tips & Panduan</span>
+    <!-- ── TIPS ── -->
+    <div class="section-header" style="margin-top: 8px">
+      <div class="sh-left">
+        <div class="sh-bar"></div>
+        <div>
+          <span class="sh-eyebrow">Panduan Praktis</span>
+          <h2 class="sh-title">Tips Nutrisi</h2>
+        </div>
+      </div>
+      <p class="sh-desc">Strategi berbasis riset untuk optimasi performa dan komposisi tubuh</p>
     </div>
 
     <div class="tips-grid">
       <div v-for="tip in nutrisiTips" :key="tip.title" class="tip-card">
-        <div class="tip-card-bar"></div>
+        <div class="tip-top-bar"></div>
 
         <div class="tip-header">
           <div class="tip-icon-wrap">
@@ -63,7 +84,7 @@
 </template>
 
 <script>
-import { makronutrien, nutrisiTips } from './bukuData.js'
+import { makronutrien, nutrisiTips } from '../../services/bukuData.js'
 
 export default {
   name: 'TabNutrisi',
@@ -76,142 +97,186 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600&display=swap');
 
-.nutrisi-wrap {
-  display: flex; flex-direction: column; gap: 20px;
-}
+.nutrisi-wrap { display: flex; flex-direction: column; gap: 22px; }
 
 /* ── Section Header ── */
 .section-header {
-  display: flex; align-items: center; gap: 14px;
-  margin-top: 8px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 24px;
+  flex-wrap: wrap;
 }
-.section-label-line {
-  width: 3px; height: 18px;
-  background: linear-gradient(180deg, #eab308, #ca8a04);
-  border-radius: 2px; flex-shrink: 0;
+.sh-left { display: flex; align-items: flex-start; gap: 14px; }
+.sh-bar {
+  width: 2px; min-height: 50px;
+  background: linear-gradient(180deg, #eab308 0%, rgba(234,179,8,0.1) 100%);
+  border-radius: 2px; flex-shrink: 0; margin-top: 2px;
 }
-.section-label {
+.sh-eyebrow {
+  display: block;
+  font-size: 0.6rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.2em;
+  color: rgba(234,179,8,0.5); margin-bottom: 5px;
+}
+.sh-title {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.72rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.18em;
-  color: rgba(255,255,255,0.3);
+  font-size: 1.7rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: #fff; line-height: 1;
+}
+.sh-desc {
+  font-size: 0.82rem; color: rgba(255,255,255,0.28);
+  max-width: 380px; line-height: 1.6;
+  align-self: center;
 }
 
-/* ── Makronutrien ── */
+/* ── Makro Cards ── */
 .makro-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
+
 .makro-card {
-  background: #0d1117;
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 18px; padding: 22px;
+  background: #0c0f18;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px; padding: 24px;
   display: flex; flex-direction: column; gap: 16px;
   position: relative; overflow: hidden;
-  transition: border-color 0.25s, transform 0.25s;
-}
-.makro-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+  cursor: default;
 }
 .makro-card:hover {
-  border-color: rgba(255,255,255,0.14);
-  transform: translateY(-2px);
+  border-color: var(--accent, rgba(255,255,255,0.14));
+  transform: translateY(-3px);
+}
+.makro-card:hover .makro-glow { opacity: 1; }
+.makro-card:hover .makro-accent-bar { opacity: 0.9; }
+
+.makro-accent-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.45; transition: opacity 0.25s;
+}
+.makro-glow {
+  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+  width: 180px; height: 120px;
+  background: radial-gradient(ellipse at center, var(--accent) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.4s; pointer-events: none;
 }
 
-.makro-top { display: flex; align-items: center; gap: 12px; }
+.makro-header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
 .makro-icon-wrap {
-  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  width: 46px; height: 46px; border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
 }
 .makro-icon-wrap :deep(svg) { width: 26px; height: 26px; }
 
-.makro-info { flex: 1; }
+.makro-pct {
+  display: flex; align-items: baseline; gap: 2px;
+  text-align: right;
+}
+.makro-pct-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem; font-weight: 900; line-height: 1;
+}
+.makro-pct-unit {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; opacity: 0.6;
+}
+
+.makro-name-row {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+}
 .makro-name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1rem; font-weight: 900;
+  font-size: 1.1rem; font-weight: 900;
   text-transform: uppercase; letter-spacing: 0.08em; color: #fff;
 }
-.makro-kcal { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 2px; }
-
-.makro-pct-badge {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.2rem; font-weight: 900;
-  padding: 4px 12px; border-radius: 8px;
-  flex-shrink: 0; line-height: 1;
+.makro-kcal {
+  font-size: 0.7rem; color: rgba(255,255,255,0.22); white-space: nowrap;
 }
 
-.makro-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+.makro-bar-wrap { }
 .makro-bar-track {
-  height: 6px; background: rgba(255,255,255,0.06);
+  height: 4px; background: rgba(255,255,255,0.06);
   border-radius: 999px; overflow: hidden;
 }
 .makro-bar-fill { height: 100%; border-radius: 999px; transition: width 0.8s ease; }
-.makro-bar-label { font-size: 0.68rem; color: rgba(255,255,255,0.25); }
 
-.makro-desc { font-size: 0.8rem; color: rgba(255,255,255,0.45); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 14px; }
+.makro-desc {
+  font-size: 0.79rem; color: rgba(255,255,255,0.38);
+  line-height: 1.68;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 14px;
+}
 
 /* ── Tips Grid ── */
 .tips-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 12px;
 }
 
 .tip-card {
-  background: #0d1117;
-  border: 1px solid rgba(255,255,255,0.07);
+  background: #0c0f18;
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 18px; padding: 22px;
   position: relative; overflow: hidden;
-  transition: border-color 0.25s, transform 0.25s;
+  transition: border-color 0.25s ease, transform 0.25s ease;
 }
-.tip-card:hover { border-color: rgba(234,179,8,0.2); transform: translateY(-2px); }
-.tip-card-bar {
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(234,179,8,0.4), transparent);
+.tip-card:hover {
+  border-color: rgba(234,179,8,0.2);
+  transform: translateY(-2px);
+}
+.tip-top-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(234,179,8,0.35), transparent);
 }
 
 .tip-header {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
 }
 .tip-icon-wrap {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-  background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.2);
+  width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+  background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.18);
   color: #eab308;
   display: flex; align-items: center; justify-content: center;
 }
 .tip-icon-wrap :deep(svg) { width: 22px; height: 22px; }
-
 .tip-title {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 1rem; font-weight: 900;
-  text-transform: uppercase; letter-spacing: 0.07em; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.08em; color: #fff;
 }
 
 .tip-list { display: flex; flex-direction: column; gap: 10px; list-style: none; }
 .tip-item {
   display: flex; gap: 12px; align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 9px;
+  transition: background 0.18s;
 }
+.tip-item:hover { background: rgba(255,255,255,0.025); }
 .tip-num {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.75rem; font-weight: 900;
-  color: #eab308; opacity: 0.5;
-  letter-spacing: 0.05em; flex-shrink: 0;
-  margin-top: 1px;
+  font-size: 0.72rem; font-weight: 900;
+  color: rgba(234,179,8,0.35); letter-spacing: 0.05em;
+  flex-shrink: 0; margin-top: 1px;
+  transition: color 0.18s;
 }
+.tip-item:hover .tip-num { color: #eab308; }
 .tip-text {
-  font-size: 0.8rem; color: rgba(255,255,255,0.5);
-  line-height: 1.55;
+  font-size: 0.79rem; color: rgba(255,255,255,0.42);
+  line-height: 1.58; transition: color 0.18s;
 }
-.tip-item:hover .tip-num { opacity: 1; }
-.tip-item:hover .tip-text { color: rgba(255,255,255,0.7); }
+.tip-item:hover .tip-text { color: rgba(255,255,255,0.68); }
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
   .makro-row { grid-template-columns: 1fr; }
+  .section-header { flex-direction: column; }
 }
 @media (max-width: 600px) {
   .tips-grid { grid-template-columns: 1fr; }

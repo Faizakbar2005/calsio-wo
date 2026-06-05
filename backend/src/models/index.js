@@ -1,17 +1,21 @@
 const { sequelize } = require('../config/database');
-const User = require('./User');
-const Workout = require('./Workout');
-const History = require('./History');
+const User     = require('./User');
+const Workout  = require('./Workout');
+const History  = require('./History');
+const Admin    = require('./Admin');
+const Favorite = require('./Favorite');  // ← tambah ini
 
-User.hasMany(History);
-History.belongsTo(User);
+User.hasMany(History, { foreignKey: 'UserId' });
+History.belongsTo(User, { foreignKey: 'UserId' });
 
-User.hasMany(Workout);
-Workout.belongsTo(User);
+User.hasMany(Workout, { foreignKey: 'UserId' });
+Workout.belongsTo(User, { foreignKey: 'UserId' });
 
 module.exports = {
   sequelize,
   User,
   Workout,
-  History
+  History,
+  Admin,
+  Favorite,  // ← tambah ini
 };

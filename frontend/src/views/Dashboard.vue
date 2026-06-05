@@ -1,455 +1,430 @@
 <template>
   <div class="dashboard-wrapper">
-
     <div class="bg-grid"></div>
     <div class="bg-glow"></div>
-
     <Navbar />
+
+    <!-- Toast Notification -->
+    <transition name="toast">
+      <div v-if="toast.show" class="toast" :class="'toast-' + toast.type">
+        <span v-html="toast.icon"></span>
+        <span>{{ toast.message }}</span>
+      </div>
+    </transition>
 
     <main class="main-content">
 
       <!-- Greeting -->
-      <div class="greeting animate-in" style="animation-delay: 0s">
-        <h1 class="greeting-title">{{ greetingText }} 💪</h1>
-        <p class="greeting-sub">Jangan skip hari ini. Setiap kalori terhitung.</p>
+      <DashboardGreeting class="animate-in" />
+
+      <!-- Tab Bar -->
+      <div class="tab-bar animate-in" style="animation-delay:0.05s">
+        <button
+          v-for="t in tabs" :key="t.value"
+          @click="activeTab = t.value"
+          :class="['tab-btn', activeTab === t.value ? 'active' : '']"
+        >
+          <span class="tab-icon" v-html="t.icon"></span>
+          {{ t.label }}
+          <span class="tab-desc">{{ t.desc }}</span>
+        </button>
       </div>
 
-      <!-- Stats Row -->
-      <div class="stats-row animate-in" style="animation-delay: 0.1s">
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(234,179,8,0.12);">
-            <!-- Flame -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2c0 0-5 4.5-5 9a5 5 0 0 0 10 0c0-2.5-1.5-4.5-2.5-6 0 2-1 3.5-2.5 4.5C13 8 12 5 12 2z"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ totalCalories }}</span>
-            <span class="stat-label">Kalori Hari Ini</span>
-          </div>
+      <!-- Loading -->
+      <div v-if="loading" class="loading-state">
+        <div class="spinner-wrap">
+          <div class="spinner"></div>
+          <div class="spinner-inner"></div>
         </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(34,197,94,0.12);">
-            <!-- Timer -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="13" r="8"/>
-              <path d="M12 9v4l2.5 2.5"/>
-              <path d="M9 3h6"/>
-              <path d="M12 3v2"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ totalDuration }}<small>min</small></span>
-            <span class="stat-label">Total Durasi</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(96,165,250,0.12);">
-            <!-- Activity -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ totalSessions }}</span>
-            <span class="stat-label">Total Sesi</span>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(249,115,22,0.12);">
-            <!-- Target crosshair -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <circle cx="12" cy="12" r="6"/>
-              <circle cx="12" cy="12" r="2"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <span class="stat-value">{{ dailyTarget }}</span>
-            <span class="stat-label">Target Harian</span>
-          </div>
-        </div>
-
+        <p>Memuat data sesi latihan kamu...</p>
       </div>
 
-      <!-- Progress + Chart Row -->
-      <div class="content-grid animate-in" style="animation-delay: 0.2s">
+      <template v-else>
 
-        <!-- Progress Card -->
-        <div class="card progress-card">
-          <div class="card-top-bar"></div>
-          <div class="card-header-row">
-            <h3 class="card-title">Target Harian</h3>
-            <span class="progress-pct">{{ progressPercentage.toFixed(0) }}%</span>
-          </div>
-
-          <div class="circle-wrap">
-            <svg class="circle-svg" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" class="circle-bg" />
-              <circle
-                cx="60" cy="60" r="50"
-                class="circle-fill"
-                :stroke-dasharray="circumference"
-                :stroke-dashoffset="strokeOffset"
-              />
-            </svg>
-            <div class="circle-label">
-              <span class="circle-kcal">{{ totalCalories }}</span>
-              <span class="circle-unit">kcal</span>
-            </div>
-          </div>
-
-          <div class="progress-bar-wrap">
-            <div class="progress-bar-track">
-              <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
-            </div>
-            <div class="progress-bar-labels">
-              <span>0</span>
-              <span>{{ dailyTarget }} kcal</span>
-            </div>
-          </div>
-
-          <div v-if="progressPercentage >= 100" class="goal-reached">
-            🎉 Target Tercapai! Luar biasa!
-          </div>
-          <div v-else class="goal-remaining">
-            Sisa <strong>{{ dailyTarget - totalCalories }} kcal</strong> lagi untuk target hari ini
-          </div>
+        <!-- Empty State -->
+        <div v-if="allHistory.length === 0" class="empty-state animate-in">
+          <div class="empty-icon">🏋️</div>
+          <h3>Belum ada sesi latihan</h3>
+          <p>Mulai workout pertamamu, lalu simpan ke riwayat — data akan langsung muncul di sini.</p>
+          <a href="/workout" class="btn-goto-workout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Mulai Workout Sekarang
+          </a>
         </div>
 
-        <!-- Chart Card -->
-        <div class="card chart-card">
-          <div class="card-top-bar"></div>
-          <div class="card-header-row">
-            <h3 class="card-title">Kalori Terbakar</h3>
-            <span class="chart-badge">7 Sesi Terakhir</span>
-          </div>
+        <template v-else>
+          <!-- Metrics (banner + cards) -->
+          <DashboardMetrics
+            :today-calories="todayCalories"
+            :target-per-session="targetPerSession"
+            :total-calories="totalCalories"
+            :total-duration="totalDuration"
+            :total-sessions="totalSessions"
+            :avg-calories="avgCalories"
+            :active-tab="activeTab"
+          />
 
-          <div v-if="loading" class="empty-chart">
-            <div class="spinner"></div>
-          </div>
+          <!-- Charts -->
+          <DashboardCharts
+            :chart-label="currentChartLabel"
+            :chart-data="currentChartData"
+            :muscle-data="muscleData"
+            :total-sessions="totalSessions"
+          />
 
-          <div v-else-if="history.length === 0" class="empty-chart">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-            </svg>
-            <p>Belum ada data workout.</p>
-            <p class="empty-sub">Mulai sesi pertama kamu!</p>
-          </div>
-
-          <div v-else class="chart-container">
-            <Line :data="chartData" :options="chartOptions" />
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="quick-actions animate-in" style="animation-delay: 0.3s">
-        <h3 class="section-title">Quick Actions</h3>
-        <div class="actions-row">
-
-          <router-link to="/workout" class="action-btn primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4"/>
-            </svg>
-            <span>Mulai Workout</span>
-          </router-link>
-
-          <router-link to="/history" class="action-btn secondary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4"/><path d="M3 16v-5h5"/>
-            </svg>
-            <span>Lihat Riwayat</span>
-          </router-link>
-
-          <router-link to="/buku-acuan" class="action-btn secondary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-            <span>Buku Acuan</span>
-          </router-link>
-
-          <router-link to="/predict" class="action-btn secondary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
-            </svg>
-            <span>Prediksi Kalori</span>
-          </router-link>
-
-        </div>
-      </div>
-
+          <!-- Bottom: Progress + Table + Streak -->
+          <DashboardBottom
+            :muscle-progress="muscleProgress"
+            :recent-history="recentHistory"
+            :streak-data="streakData"
+            :streak-count="streakCount"
+            :target-per-session="targetPerSession"
+          />
+        </template>
+      </template>
     </main>
   </div>
 </template>
 
 <script>
-import axios from "axios"
-import { Line } from "vue-chartjs"
-import {
-  Chart as ChartJS, Title, Tooltip, Legend,
-  LineElement, CategoryScale, LinearScale, PointElement, Filler
-} from "chart.js"
-import Navbar from "../components/layout/navbar.vue"
+import axios from 'axios'
+import Navbar           from '../components/layout/navbar.vue'
+import DashboardGreeting from '../components/DashboardGreeting.vue'
+import DashboardMetrics  from '../components/DashboardMetrics.vue'
+import DashboardCharts   from '../components/DashboardCharts.vue'
+import DashboardBottom   from '../components/DashboardBottom.vue'
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, Filler)
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+const MUSCLE_COLORS = {
+  'Dada'    : '#eab308', 'Kaki'    : '#3b82f6', 'Punggung': '#22c55e',
+  'Kardio'  : '#14b8a6', 'Bisep'   : '#a855f7', 'Trisep'  : '#f97316',
+  'Deltoid' : '#ec4899', 'Perut'   : '#06b6d4', 'Bokong'  : '#84cc16',
+}
+
+const ICONS = {
+  day:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  week:  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  month: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>`,
+  checkCircle: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+}
 
 export default {
-  components: { Line, Navbar },
+  name: 'Dashboard',
+  components: { Navbar, DashboardGreeting, DashboardMetrics, DashboardCharts, DashboardBottom },
 
   data() {
     return {
-      totalCalories: 0,
-      totalDuration: 0,
-      totalSessions: 0,
-      dailyTarget: 600,
-      history: [],
-      loading: true
+      loading         : true,
+      activeTab       : 'daily',
+      allHistory      : [],
+      stats           : {},
+      userProfile     : null,
+      targetPerSession: 500,
+      lastHistoryCount: 0,  // untuk deteksi sesi baru
+      pollTimer       : null,
+      tabs: [
+        { value: 'daily',   label: 'Harian',   desc: 'Hari ini', icon: ICONS.day   },
+        { value: 'weekly',  label: 'Mingguan',  desc: '7 hari',   icon: ICONS.week  },
+        { value: 'monthly', label: 'Bulanan',   desc: 'Bulan ini',icon: ICONS.month },
+      ],
+      toast: { show: false, message: '', type: 'success', icon: '', _timer: null },
     }
   },
 
   computed: {
-    greetingText() {
-      const h = new Date().getHours()
-      if (h < 11) return "Selamat Pagi"
-      if (h < 15) return "Selamat Siang"
-      if (h < 18) return "Selamat Sore"
-      return "Selamat Malam"
+    // ── Filter berdasarkan tab ──
+    filteredHistory() {
+      const now = new Date()
+      return this.allHistory.filter(h => {
+        const d = new Date(h.created_at || h.createdAt)
+        if (this.activeTab === 'daily')
+          return d.toDateString() === now.toDateString()
+        if (this.activeTab === 'weekly') {
+          const w = new Date(now); w.setDate(now.getDate() - 7)
+          return d >= w
+        }
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      })
     },
-    progressPercentage() {
-      if (!this.dailyTarget) return 0
-      return Math.min((this.totalCalories / this.dailyTarget) * 100, 100)
+    todayCalories() {
+      const now = new Date()
+      return Math.round(
+        this.allHistory
+          .filter(h => new Date(h.created_at || h.createdAt).toDateString() === now.toDateString())
+          .reduce((s, h) => s + (h.calories || 0), 0)
+      )
     },
-    circumference() {
-      return 2 * Math.PI * 50
+    totalCalories() { return Math.round(this.filteredHistory.reduce((s, h) => s + (h.calories || 0), 0)) },
+    totalDuration()  { return this.filteredHistory.reduce((s, h) => s + (h.duration || 0), 0) },
+    totalSessions()  { return this.filteredHistory.length },
+    avgCalories()    { return this.totalSessions ? Math.round(this.totalCalories / this.totalSessions) : 0 },
+
+    currentChartLabel() {
+      return { daily: 'Kalori & Durasi — 7 Hari Terakhir', weekly: 'Kalori & Durasi — 4 Minggu Terakhir', monthly: 'Kalori & Durasi — 6 Bulan Terakhir' }[this.activeTab]
     },
-    strokeOffset() {
-      return this.circumference - (this.progressPercentage / 100) * this.circumference
-    },
-    chartData() {
-      const last7 = this.history.slice(-7)
-      return {
-        labels: last7.map((_, i) => `Sesi ${i + 1}`),
-        datasets: [{
-          label: "Kalori Terbakar",
-          data: last7.map(h => h.calories),
-          borderColor: "#eab308",
-          backgroundColor: "rgba(234,179,8,0.08)",
-          borderWidth: 2,
-          tension: 0.4,
-          fill: true,
-          pointBackgroundColor: "#eab308",
-          pointBorderColor: "#000",
-          pointBorderWidth: 2,
-          pointRadius: 5
-        }]
-      }
-    },
-    chartOptions() {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: "#0d1117",
-            borderColor: "rgba(234,179,8,0.3)",
-            borderWidth: 1,
-            titleColor: "#eab308",
-            bodyColor: "#ffffff",
-            callbacks: { label: ctx => ` ${ctx.parsed.y} kcal` }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: "rgba(255,255,255,0.4)", font: { size: 11 } },
-            grid: { color: "rgba(255,255,255,0.04)" },
-            border: { color: "rgba(255,255,255,0.08)" }
-          },
-          y: {
-            ticks: { color: "rgba(255,255,255,0.4)", font: { size: 11 } },
-            grid: { color: "rgba(255,255,255,0.04)" },
-            border: { color: "rgba(255,255,255,0.08)" }
-          }
+
+    currentChartData() {
+      const now = new Date()
+      if (this.activeTab === 'daily') {
+        const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(now); d.setDate(now.getDate() - (6 - i)); return d })
+        return {
+          labels  : days.map(d => d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' })),
+          calories: days.map(d => Math.round(this.allHistory.filter(h => new Date(h.created_at || h.createdAt).toDateString() === d.toDateString()).reduce((s, h) => s + (h.calories || 0), 0))),
+          duration: days.map(d => this.allHistory.filter(h => new Date(h.created_at || h.createdAt).toDateString() === d.toDateString()).reduce((s, h) => s + (h.duration || 0), 0)),
         }
       }
-    }
+      if (this.activeTab === 'weekly') {
+        const weeks = Array.from({ length: 4 }, (_, i) => {
+          const end = new Date(now); end.setDate(now.getDate() - i * 7)
+          const start = new Date(end); start.setDate(end.getDate() - 6)
+          return { start, end }
+        }).reverse()
+        return {
+          labels  : weeks.map((_, i) => `Minggu ${i + 1}`),
+          calories: weeks.map(w => Math.round(this.allHistory.filter(h => { const d = new Date(h.created_at || h.createdAt); return d >= w.start && d <= w.end }).reduce((s, h) => s + (h.calories || 0), 0))),
+          duration: weeks.map(w => this.allHistory.filter(h => { const d = new Date(h.created_at || h.createdAt); return d >= w.start && d <= w.end }).reduce((s, h) => s + (h.duration || 0), 0)),
+        }
+      }
+      const months = Array.from({ length: 6 }, (_, i) => new Date(now.getFullYear(), now.getMonth() - (5 - i), 1))
+      return {
+        labels  : months.map(d => d.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' })),
+        calories: months.map(d => Math.round(this.allHistory.filter(h => { const hd = new Date(h.created_at || h.createdAt); return hd.getMonth() === d.getMonth() && hd.getFullYear() === d.getFullYear() }).reduce((s, h) => s + (h.calories || 0), 0))),
+        duration: months.map(d => this.allHistory.filter(h => { const hd = new Date(h.created_at || h.createdAt); return hd.getMonth() === d.getMonth() && hd.getFullYear() === d.getFullYear() }).reduce((s, h) => s + (h.duration || 0), 0)),
+      }
+    },
+
+    muscleData() {
+      const counts = {}
+      this.filteredHistory.forEach(h => {
+        const key = h.muscle_group || h.workout_type || 'Lainnya'
+        counts[key] = (counts[key] || 0) + 1
+      })
+      const total = Object.values(counts).reduce((s, v) => s + v, 0)
+      if (!total) return []
+      return Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({
+        name, count, pct: Math.round(count / total * 100), color: MUSCLE_COLORS[name] || '#888',
+      }))
+    },
+
+    muscleProgress() {
+      const map = {}
+      this.filteredHistory.forEach(h => {
+        const key = h.muscle_group || h.workout_type || 'Lainnya'
+        map[key] = (map[key] || 0) + (h.calories || 0)
+      })
+      return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, calories]) => ({
+        name, calories: Math.round(calories), color: MUSCLE_COLORS[name] || '#888',
+      }))
+    },
+
+    recentHistory() {
+      return [...this.allHistory]
+        .sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt))
+        .slice(0, 6)
+    },
+
+    streakData() {
+      const now = new Date()
+      return Array.from({ length: 14 }, (_, i) => {
+        const d = new Date(now); d.setDate(now.getDate() - (13 - i))
+        return {
+          isToday : i === 13,
+          hit     : this.allHistory.some(h => new Date(h.created_at || h.createdAt).toDateString() === d.toDateString()),
+          dayLabel: d.toLocaleDateString('id-ID', { weekday: 'narrow' }),
+          dateNum : d.getDate(),
+          dateStr : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+        }
+      })
+    },
+
+    streakCount() {
+      let count = 0
+      for (let i = this.streakData.length - 2; i >= 0; i--) {
+        if (this.streakData[i].hit) count++
+        else break
+      }
+      return count
+    },
   },
 
   async mounted() {
-    try {
-      const [statsRes, historyRes] = await Promise.all([
-        axios.get(`${API_URL}/api/history/stats`),
-        axios.get(`${API_URL}/api/history`)
-      ])
-      this.totalCalories = statsRes.data.total_calories || 0
-      this.dailyTarget   = statsRes.data.daily_target   || 600
-      this.totalSessions = statsRes.data.total_sessions || 0
-      this.history       = historyRes.data || []
-      this.totalDuration = this.history.reduce((sum, h) => sum + (h.duration || 0), 0)
-    } catch (err) {
-      console.warn("Gagal fetch data:", err.message)
-    } finally {
-      this.loading = false
-    }
-  }
+    await this.fetchData()
+    this.startPolling()   // ← auto-refresh setiap 15 detik
+  },
+
+  beforeUnmount() {
+    this.stopPolling()
+  },
+
+  methods: {
+    // ── Data Fetching ──
+    async fetchData(silent = false) {
+      if (!silent) this.loading = true
+      try {
+        const [histRes, statsRes, userRes] = await Promise.allSettled([
+          axios.get(`${API_URL}/api/history`),
+          axios.get(`${API_URL}/api/history/stats`),
+          axios.get(`${API_URL}/api/users`),
+        ])
+        if (histRes.status === 'fulfilled') {
+          const newData = histRes.value.data || []
+          // Tandai baris baru untuk animasi flash di tabel
+          if (silent && newData.length > this.lastHistoryCount) {
+            const added = newData.length - this.lastHistoryCount
+            newData.slice(0, added).forEach(h => { h._isNew = true; setTimeout(() => { delete h._isNew }, 2000) })
+            this.showToast(`🎉 ${added} sesi baru berhasil disimpan!`, 'success')
+          }
+          this.lastHistoryCount = newData.length
+          this.allHistory = newData
+        }
+        if (statsRes.status === 'fulfilled') {
+          this.stats = statsRes.value.data || {}
+          if (this.stats.daily_target) this.targetPerSession = this.stats.daily_target
+        }
+        if (userRes.status === 'fulfilled') {
+          this.userProfile = userRes.value.data
+          if (this.userProfile?.daily_target_calories) this.targetPerSession = this.userProfile.daily_target_calories
+        }
+      } catch (err) {
+        console.warn('Fetch error:', err.message)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // ── Polling: cek sesi baru setiap 15 detik ──
+    startPolling() {
+      this.pollTimer = setInterval(() => {
+        this.fetchData(true)   // silent = true → tidak tampilkan loading spinner
+      }, 15000)
+    },
+    stopPolling() {
+      if (this.pollTimer) clearInterval(this.pollTimer)
+    },
+
+    // ── Toast ──
+    showToast(message, type = 'success') {
+      if (this.toast._timer) clearTimeout(this.toast._timer)
+      this.toast = {
+        show   : true,
+        message,
+        type,
+        icon   : type === 'success' ? ICONS.checkCircle : ICONS.info,
+        _timer : setTimeout(() => { this.toast.show = false }, 3500),
+      }
+    },
+  },
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 .dashboard-wrapper {
   font-family: 'Barlow', sans-serif;
-  min-height: 100vh;
-  background: #080a0f;
-  color: #ffffff;
-  position: relative;
-  overflow-x: hidden;
+  min-height: 100vh; background: #080a0f; color: #fff;
+  position: relative; overflow-x: hidden;
 }
-
 .bg-grid {
   position: fixed; inset: 0;
   background-image:
     linear-gradient(rgba(234,179,8,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(234,179,8,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none; z-index: 0;
+  background-size: 40px 40px; pointer-events: none; z-index: 0;
 }
-
 .bg-glow {
-  position: fixed; top: -300px; right: -100px;
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(234,179,8,0.07) 0%, transparent 70%);
+  position: fixed; top: -200px; right: -100px; width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(234,179,8,0.06) 0%, transparent 70%);
   pointer-events: none; z-index: 0;
 }
-
 .main-content {
-  position: relative; z-index: 1;
-  max-width: 1200px; margin: 0 auto;
-  padding: 40px 40px 60px;
-  display: flex; flex-direction: column; gap: 32px;
+  position: relative; z-index: 1; max-width: 1280px; margin: 0 auto;
+  padding: 40px 40px 80px; display: flex; flex-direction: column; gap: 22px;
 }
 
-.greeting-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 2.6rem; font-weight: 900;
-  text-transform: uppercase; letter-spacing: 0.04em; line-height: 1;
+/* ── Toast ── */
+.toast {
+  position: fixed; top: 24px; right: 24px; z-index: 9999;
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 20px; border-radius: 12px;
+  font-size: 0.85rem; font-weight: 600;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
-.greeting-sub { margin-top: 8px; font-size: 0.9rem; color: rgba(255,255,255,0.35); }
+.toast-success {
+  background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.35); color: #22c55e;
+}
+.toast-info {
+  background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.35); color: #60a5fa;
+}
+.toast-enter-active, .toast-leave-active { transition: all 0.35s cubic-bezier(.4,0,.2,1); }
+.toast-enter-from { opacity: 0; transform: translateX(40px); }
+.toast-leave-to   { opacity: 0; transform: translateX(40px); }
 
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.stat-card {
-  background: #0d1117; border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 16px; padding: 20px;
-  display: flex; align-items: center; gap: 16px;
-  transition: border-color 0.2s, transform 0.2s;
+/* ── Tab Bar ── */
+.tab-bar {
+  display: flex; gap: 4px; background: rgba(255,255,255,0.04); padding: 4px;
+  border-radius: 14px; width: fit-content; border: 1px solid rgba(255,255,255,0.07);
 }
-.stat-card:hover { border-color: rgba(234,179,8,0.25); transform: translateY(-2px); }
-.stat-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.tab-btn {
+  padding: 8px 20px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.88rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  background: transparent; border: none; color: rgba(255,255,255,0.35);
+  border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 7px;
 }
-.stat-info { display: flex; flex-direction: column; gap: 2px; }
-.stat-value {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.7rem; font-weight: 900; color: #fff; line-height: 1;
-}
-.stat-value small { font-size: 0.9rem; opacity: 0.6; margin-left: 2px; }
-.stat-label {
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.35);
-}
+.tab-icon { display: flex; align-items: center; opacity: 0.6; }
+.tab-desc { font-size: 0.62rem; font-weight: 400; text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.22); }
+.tab-btn:hover  { color: rgba(255,255,255,0.6); }
+.tab-btn.active { background: rgba(234,179,8,0.14); color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
+.tab-btn.active .tab-icon { opacity: 1; }
+.tab-btn.active .tab-desc { color: rgba(234,179,8,0.45); }
 
-.content-grid { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
-
-.card {
-  background: #0d1117; border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 20px; padding: 28px; position: relative; overflow: hidden;
+/* ── Loading ── */
+.loading-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; min-height: 320px; color: rgba(255,255,255,0.3);
 }
-.card-top-bar {
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(234,179,8,0.5), transparent);
+.spinner-wrap { position: relative; width: 48px; height: 48px; }
+.spinner {
+  position: absolute; inset: 0;
+  border: 3px solid rgba(234,179,8,0.12); border-top-color: #eab308;
+  border-radius: 50%; animation: spin 0.9s linear infinite;
 }
-.card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.card-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.6);
+.spinner-inner {
+  position: absolute; inset: 8px;
+  border: 2px solid rgba(234,179,8,0.08); border-bottom-color: rgba(234,179,8,0.5);
+  border-radius: 50%; animation: spin 0.6s linear infinite reverse;
 }
-
-.progress-pct {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.5rem; font-weight: 900; color: #eab308;
-}
-.circle-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 24px; }
-.circle-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.circle-bg  { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
-.circle-fill { fill: none; stroke: #eab308; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
-.circle-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.circle-kcal { font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 900; color: #eab308; line-height: 1; }
-.circle-unit { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.35); }
-
-.progress-bar-wrap { margin-bottom: 16px; }
-.progress-bar-track { width: 100%; height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; margin-bottom: 8px; }
-.progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ca8a04, #eab308, #facc15); border-radius: 999px; transition: width 1s ease; }
-.progress-bar-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: rgba(255,255,255,0.25); }
-
-.goal-reached { text-align: center; font-size: 0.85rem; font-weight: 600; color: #22c55e; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; padding: 10px; }
-.goal-remaining { text-align: center; font-size: 0.82rem; color: rgba(255,255,255,0.35); }
-.goal-remaining strong { color: #eab308; }
-
-.chart-badge {
-  font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-  color: rgba(234,179,8,0.7); background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.2);
-  padding: 4px 10px; border-radius: 999px;
-}
-.chart-container { height: 220px; }
-.empty-chart { height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-.empty-chart p { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
-.empty-sub { font-size: 0.75rem !important; color: rgba(234,179,8,0.5) !important; }
-.spinner { width: 36px; height: 36px; border: 3px solid rgba(234,179,8,0.15); border-top-color: #eab308; border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.85rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.3); margin-bottom: 12px;
+/* ── Empty State ── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; min-height: 340px; text-align: center;
+  background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.09);
+  border-radius: 20px; padding: 48px;
 }
-.actions-row { display: flex; gap: 12px; flex-wrap: wrap; }
-.action-btn {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 24px; border-radius: 12px;
+.empty-icon { font-size: 3.5rem; filter: grayscale(0.3); }
+.empty-state h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 700; color: rgba(255,255,255,0.4); }
+.empty-state p  { font-size: 0.86rem; color: rgba(255,255,255,0.25); max-width: 360px; }
+.btn-goto-workout {
+  margin-top: 8px; padding: 12px 26px;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.4);
+  border-radius: 12px; color: #eab308;
   font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.06em; text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
-.action-btn.primary { background: #eab308; color: #000; }
-.action-btn.primary:hover { background: #facc15; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(234,179,8,0.35); }
-.action-btn.secondary { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); }
-.action-btn.secondary:hover { border-color: rgba(234,179,8,0.35); color: #eab308; background: rgba(234,179,8,0.06); }
+.btn-goto-workout:hover { background: rgba(234,179,8,0.18); transform: translateY(-1px); }
 
-.animate-in { opacity: 0; transform: translateY(16px); animation: fadeUp 0.5s ease forwards; }
+.animate-in { opacity: 0; transform: translateY(14px); animation: fadeUp 0.5s ease forwards; }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-@media (max-width: 900px) {
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .content-grid { grid-template-columns: 1fr; }
-  .main-content { padding: 24px 20px 48px; }
-}
-@media (max-width: 600px) {
-  .stats-row { grid-template-columns: 1fr 1fr; }
-  .actions-row { flex-direction: column; }
-}
+@media (max-width: 768px) { .main-content { padding: 24px 16px 60px; } }
 </style>

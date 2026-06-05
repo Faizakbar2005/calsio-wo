@@ -1,0 +1,89 @@
+================================================================
+LAPORAN EVALUASI SISTEM INFORMATION RETRIEVAL
+Sistem: RAG dengan TF-IDF + Query Expansion + Re-ranking
+Tanggal: 29/5/2026, 14.58.38
+Total Query Uji: 20
+================================================================
+
+1. METODOLOGI
+   - Algoritma IR  : TF-IDF dengan Cosine Similarity
+   - Query Expansion: Sinonim Bahasa Indonesia + Inggris
+   - Re-ranking    : Boost berdasarkan title match + tipe dokumen
+   - LLM Generator : Gemini 2.0 Flash (summarization)
+   - Fallback      : Template-based summary dari irService
+
+2. DATASET
+   - Total dokumen : ~56 dokumen (exercises, muscle, nutrisi, MET)
+   - Query uji     : 20 query
+   - Bahasa        : Indonesia (dengan ekspansi ke Inggris)
+
+3. HASIL EVALUASI IR
+
+   a. Precision, Recall, F1-Score
+   ┌────────────┬───────────┬──────────┬──────────┐
+   │   Metrik   │    @1     │    @3    │    @5    │
+   ├────────────┼───────────┼──────────┼──────────┤
+   │ Precision  │  0.8500  │  0.5333 │  0.4000 │
+   │ Recall     │  0.5125  │  0.8333 │  0.6333 │
+   │ F1-Score   │  0.6117  │  0.6269 │  0.4889 │
+   └────────────┴───────────┴──────────┴──────────┘
+
+   b. Ranking Metrics
+   MRR  (Mean Reciprocal Rank)  : 0.9000
+   MAP  (Mean Average Precision): 0.7833
+
+   c. Performa
+   Rata-rata latency IR         : 1.50 ms
+
+4. HASIL EVALUASI PER QUERY
+
+   Q01: "cara push up yang benar"
+        P@3: 0.333 | R@3: 0.500 | F1: 0.400 | RR: 1.000 | 13.16ms
+   Q02: "latihan untuk otot dada"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.95ms
+   Q03: "berapa kalori squat 30 menit"
+        P@3: 0.333 | R@3: 0.500 | F1: 0.400 | RR: 0.500 | 1.08ms
+   Q04: "latihan punggung"
+        P@5: 0.600 | R@5: 1.000 | F1: 0.750 | RR: 1.000 | 2.02ms
+   Q05: "protein berapa per hari"
+        P@3: 0.333 | R@3: 0.500 | F1: 0.400 | RR: 1.000 | 1.49ms
+   Q06: "latihan untuk pemula tanpa alat"
+        P@5: 0.400 | R@5: 0.500 | F1: 0.444 | RR: 1.000 | 1.37ms
+   Q07: "cara menurunkan berat badan"
+        P@5: 0.000 | R@5: 0.000 | F1: 0.000 | RR: 0.000 | 0.68ms
+   Q08: "latihan bisep"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.88ms
+   Q09: "tips hidrasi saat olahraga"
+        P@3: 0.333 | R@3: 1.000 | F1: 0.500 | RR: 1.000 | 1.44ms
+   Q10: "MET lari 8 km per jam"
+        P@3: 0.333 | R@3: 1.000 | F1: 0.500 | RR: 1.000 | 0.78ms
+   Q11: "latihan kardio terbaik"
+        P@5: 0.400 | R@5: 0.667 | F1: 0.500 | RR: 1.000 | 0.48ms
+   Q12: "otot glutes bokong"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.44ms
+   Q13: "suplemen untuk gym"
+        P@3: 0.333 | R@3: 1.000 | F1: 0.500 | RR: 1.000 | 0.45ms
+   Q14: "cara deadlift yang benar"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.72ms
+   Q15: "makan sebelum dan sesudah latihan"
+        P@3: 0.333 | R@3: 1.000 | F1: 0.500 | RR: 1.000 | 1.22ms
+   Q16: "latihan trisep"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.69ms
+   Q17: "plank untuk core"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 0.500 | 0.46ms
+   Q18: "pemulihan setelah olahraga"
+        P@3: 0.333 | R@3: 1.000 | F1: 0.500 | RR: 1.000 | 0.72ms
+   Q19: "shoulder press untuk bahu"
+        P@3: 0.667 | R@3: 1.000 | F1: 0.800 | RR: 1.000 | 0.43ms
+   Q20: "kalori bersepeda vs lari"
+        P@5: 0.600 | R@5: 1.000 | F1: 0.750 | RR: 1.000 | 0.49ms
+
+5. ANALISIS
+   - Sistem berhasil menemukan dokumen relevan dengan MRR 0.9000
+   - Precision@3 0.5333 menunjukkan 53.3% dokumen yang diambil relevan
+   - Recall@5 0.6333 menunjukkan sistem menemukan 63.3% dari total dokumen relevan
+   - Rata-rata waktu retrieval 1.50ms menunjukkan sistem real-time
+
+================================================================
+END OF REPORT
+================================================================

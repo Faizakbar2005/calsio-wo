@@ -1,0 +1,601 @@
+{
+  "timestamp": "2026-05-29T07:58:38.626Z",
+  "system": "TF-IDF + Query Expansion + Re-ranking + LLM Summarization",
+  "totalQueries": 20,
+  "irEvaluation": {
+    "perQuery": [
+      {
+        "no": 1,
+        "query": "cara push up yang benar",
+        "relevant": [
+          "exercise_Push Up",
+          "muscle_Dada (Chest)"
+        ],
+        "retrieved": [
+          "exercise_Push Up",
+          "met_Push Up",
+          "exercise_Pull Up"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.3333333333333333,
+          "R@3": 0.5,
+          "F1@3": 0.4
+        },
+        "rr": 1,
+        "ap": 0.5,
+        "latency": 13.16,
+        "topK": 3
+      },
+      {
+        "no": 2,
+        "query": "latihan untuk otot dada",
+        "relevant": [
+          "exercise_Push Up",
+          "muscle_Dada (Chest)"
+        ],
+        "retrieved": [
+          "muscle_Dada (Chest)",
+          "exercise_Push Up",
+          "muscle_Punggung (Back)"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.95,
+        "topK": 3
+      },
+      {
+        "no": 3,
+        "query": "berapa kalori squat 30 menit",
+        "relevant": [
+          "exercise_Squat",
+          "met_Squat (BW)"
+        ],
+        "retrieved": [
+          "met_Barbell Squat",
+          "met_Squat (BW)",
+          "nutrisi_Defisit & Surplus Kalori"
+        ],
+        "metrics": {
+          "P@1": 0,
+          "R@1": 0,
+          "F1@1": 0,
+          "P@3": 0.3333333333333333,
+          "R@3": 0.5,
+          "F1@3": 0.4
+        },
+        "rr": 0.5,
+        "ap": 0.25,
+        "latency": 1.08,
+        "topK": 3
+      },
+      {
+        "no": 4,
+        "query": "latihan punggung",
+        "relevant": [
+          "exercise_Pull Up",
+          "exercise_Deadlift",
+          "muscle_Punggung (Back)"
+        ],
+        "retrieved": [
+          "muscle_Punggung (Back)",
+          "exercise_Pull Up",
+          "exercise_Deadlift",
+          "muscle_Bokong (Glutes)",
+          "exercise_Hip Thrust"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.3333333333333333,
+          "F1@1": 0.5,
+          "P@3": 1,
+          "R@3": 1,
+          "F1@3": 1,
+          "P@5": 0.6,
+          "R@5": 1,
+          "F1@5": 0.7499999999999999
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 2.02,
+        "topK": 5
+      },
+      {
+        "no": 5,
+        "query": "protein berapa per hari",
+        "relevant": [
+          "makro_Protein",
+          "nutrisi_Makanan Prioritas"
+        ],
+        "retrieved": [
+          "makro_Protein",
+          "nutrisi_Suplemen Dasar",
+          "nutrisi_Defisit & Surplus Kalori"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.3333333333333333,
+          "R@3": 0.5,
+          "F1@3": 0.4
+        },
+        "rr": 1,
+        "ap": 0.5,
+        "latency": 1.49,
+        "topK": 3
+      },
+      {
+        "no": 6,
+        "query": "latihan untuk pemula tanpa alat",
+        "relevant": [
+          "exercise_Push Up",
+          "exercise_Squat",
+          "exercise_Plank",
+          "exercise_Lunges"
+        ],
+        "retrieved": [
+          "exercise_Push Up",
+          "exercise_Plank",
+          "muscle_Kardio",
+          "exercise_Dumbbell Curl",
+          "exercise_Mountain Climber"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.25,
+          "F1@1": 0.4,
+          "P@3": 0.6666666666666666,
+          "R@3": 0.5,
+          "F1@3": 0.5714285714285715,
+          "P@5": 0.4,
+          "R@5": 0.5,
+          "F1@5": 0.4444444444444445
+        },
+        "rr": 1,
+        "ap": 0.5,
+        "latency": 1.37,
+        "topK": 5
+      },
+      {
+        "no": 7,
+        "query": "cara menurunkan berat badan",
+        "relevant": [
+          "nutrisi_Defisit & Surplus Kalori",
+          "makro_Karbohidrat",
+          "makro_Lemak"
+        ],
+        "retrieved": [
+          "met_Deadlift",
+          "met_Burpee",
+          "met_Pull Up",
+          "met_Mountain Climber",
+          "met_Barbell Squat"
+        ],
+        "metrics": {
+          "P@1": 0,
+          "R@1": 0,
+          "F1@1": 0,
+          "P@3": 0,
+          "R@3": 0,
+          "F1@3": 0,
+          "P@5": 0,
+          "R@5": 0,
+          "F1@5": 0
+        },
+        "rr": 0,
+        "ap": 0,
+        "latency": 0.68,
+        "topK": 5
+      },
+      {
+        "no": 8,
+        "query": "latihan bisep",
+        "relevant": [
+          "exercise_Dumbbell Curl",
+          "muscle_Bisep (Biceps)"
+        ],
+        "retrieved": [
+          "muscle_Bisep (Biceps)",
+          "exercise_Dumbbell Curl",
+          "muscle_Trisep (Triceps)"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.88,
+        "topK": 3
+      },
+      {
+        "no": 9,
+        "query": "tips hidrasi saat olahraga",
+        "relevant": [
+          "nutrisi_Hidrasi"
+        ],
+        "retrieved": [
+          "nutrisi_Hidrasi",
+          "exercise_Plank",
+          "nutrisi_Timing Makan"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 1,
+          "F1@1": 1,
+          "P@3": 0.3333333333333333,
+          "R@3": 1,
+          "F1@3": 0.5
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 1.44,
+        "topK": 3
+      },
+      {
+        "no": 10,
+        "query": "MET lari 8 km per jam",
+        "relevant": [
+          "met_Lari 8 km/jam"
+        ],
+        "retrieved": [
+          "met_Lari 8 km/jam",
+          "met_Lari 12 km/jam",
+          "met_Deadlift"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 1,
+          "F1@1": 1,
+          "P@3": 0.3333333333333333,
+          "R@3": 1,
+          "F1@3": 0.5
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.78,
+        "topK": 3
+      },
+      {
+        "no": 11,
+        "query": "latihan kardio terbaik",
+        "relevant": [
+          "exercise_Jumping Jack",
+          "exercise_Mountain Climber",
+          "muscle_Kardio"
+        ],
+        "retrieved": [
+          "muscle_Kardio",
+          "exercise_Jumping Jack",
+          "exercise_Plank",
+          "met_Jumping Jack",
+          "met_Jalan Kaki"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.3333333333333333,
+          "F1@1": 0.5,
+          "P@3": 0.6666666666666666,
+          "R@3": 0.6666666666666666,
+          "F1@3": 0.6666666666666666,
+          "P@5": 0.4,
+          "R@5": 0.6666666666666666,
+          "F1@5": 0.5
+        },
+        "rr": 1,
+        "ap": 0.6666666666666666,
+        "latency": 0.48,
+        "topK": 5
+      },
+      {
+        "no": 12,
+        "query": "otot glutes bokong",
+        "relevant": [
+          "exercise_Hip Thrust",
+          "muscle_Bokong (Glutes)"
+        ],
+        "retrieved": [
+          "muscle_Bokong (Glutes)",
+          "exercise_Hip Thrust",
+          "exercise_Lunges"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.44,
+        "topK": 3
+      },
+      {
+        "no": 13,
+        "query": "suplemen untuk gym",
+        "relevant": [
+          "nutrisi_Suplemen Dasar"
+        ],
+        "retrieved": [
+          "nutrisi_Suplemen Dasar",
+          "makro_Lemak",
+          "nutrisi_Timing Makan"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 1,
+          "F1@1": 1,
+          "P@3": 0.3333333333333333,
+          "R@3": 1,
+          "F1@3": 0.5
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.45,
+        "topK": 3
+      },
+      {
+        "no": 14,
+        "query": "cara deadlift yang benar",
+        "relevant": [
+          "exercise_Deadlift",
+          "muscle_Punggung (Back)"
+        ],
+        "retrieved": [
+          "exercise_Deadlift",
+          "met_Deadlift",
+          "muscle_Punggung (Back)"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 0.8333333333333333,
+        "latency": 0.72,
+        "topK": 3
+      },
+      {
+        "no": 15,
+        "query": "makan sebelum dan sesudah latihan",
+        "relevant": [
+          "nutrisi_Timing Makan"
+        ],
+        "retrieved": [
+          "nutrisi_Timing Makan",
+          "nutrisi_Makanan Prioritas",
+          "nutrisi_Hidrasi"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 1,
+          "F1@1": 1,
+          "P@3": 0.3333333333333333,
+          "R@3": 1,
+          "F1@3": 0.5
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 1.22,
+        "topK": 3
+      },
+      {
+        "no": 16,
+        "query": "latihan trisep",
+        "relevant": [
+          "exercise_Tricep Dip",
+          "muscle_Trisep (Triceps)"
+        ],
+        "retrieved": [
+          "muscle_Trisep (Triceps)",
+          "exercise_Tricep Dip",
+          "exercise_Push Up"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.69,
+        "topK": 3
+      },
+      {
+        "no": 17,
+        "query": "plank untuk core",
+        "relevant": [
+          "exercise_Plank",
+          "muscle_Perut (Core)"
+        ],
+        "retrieved": [
+          "met_Plank",
+          "exercise_Plank",
+          "muscle_Perut (Core)"
+        ],
+        "metrics": {
+          "P@1": 0,
+          "R@1": 0,
+          "F1@1": 0,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 0.5,
+        "ap": 0.5833333333333333,
+        "latency": 0.46,
+        "topK": 3
+      },
+      {
+        "no": 18,
+        "query": "pemulihan setelah olahraga",
+        "relevant": [
+          "nutrisi_Pemulihan"
+        ],
+        "retrieved": [
+          "nutrisi_Pemulihan",
+          "nutrisi_Timing Makan",
+          "makro_Karbohidrat"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 1,
+          "F1@1": 1,
+          "P@3": 0.3333333333333333,
+          "R@3": 1,
+          "F1@3": 0.5
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.72,
+        "topK": 3
+      },
+      {
+        "no": 19,
+        "query": "shoulder press untuk bahu",
+        "relevant": [
+          "exercise_Shoulder Press",
+          "muscle_Bahu (Shoulders)"
+        ],
+        "retrieved": [
+          "exercise_Shoulder Press",
+          "met_Shoulder Press",
+          "muscle_Bahu (Shoulders)"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.5,
+          "F1@1": 0.6666666666666666,
+          "P@3": 0.6666666666666666,
+          "R@3": 1,
+          "F1@3": 0.8
+        },
+        "rr": 1,
+        "ap": 0.8333333333333333,
+        "latency": 0.43,
+        "topK": 3
+      },
+      {
+        "no": 20,
+        "query": "kalori bersepeda vs lari",
+        "relevant": [
+          "met_Lari 8 km/jam",
+          "met_Bersepeda Santai",
+          "met_Bersepeda Cepat"
+        ],
+        "retrieved": [
+          "met_Bersepeda Santai",
+          "met_Bersepeda Cepat",
+          "met_Lari 8 km/jam",
+          "met_Lari 12 km/jam",
+          "nutrisi_Defisit & Surplus Kalori"
+        ],
+        "metrics": {
+          "P@1": 1,
+          "R@1": 0.3333333333333333,
+          "F1@1": 0.5,
+          "P@3": 1,
+          "R@3": 1,
+          "F1@3": 1,
+          "P@5": 0.6,
+          "R@5": 1,
+          "F1@5": 0.7499999999999999
+        },
+        "rr": 1,
+        "ap": 1,
+        "latency": 0.49,
+        "topK": 5
+      }
+    ],
+    "aggregate": {
+      "P@1": 0.85,
+      "R@1": 0.5125,
+      "F1@1": 0.6116666666666666,
+      "P@3": 0.5333333333333333,
+      "R@3": 0.8333333333333334,
+      "F1@3": 0.6269047619047621,
+      "P@5": 0.4,
+      "R@5": 0.6333333333333333,
+      "F1@5": 0.4888888888888888,
+      "MRR": 0.9,
+      "MAP": 0.7833333333333334,
+      "avgLatency": 1.4975
+    }
+  },
+  "fallbackEvaluation": [
+    {
+      "query": "cara push up yang benar",
+      "coverage": 0.75,
+      "summary": "Push Up adalah latihan beginner untuk otot Dada. Gerakan dasar mendorong tubuh naik turun dengan tangan, melatih dada, bahu, dan trisep secara bersamaan. Cara melakukannya: 1. Posisi plank dengan tangan selebar bahu 2. Turunkan dada hingga hampir menyentuh lantai 3. Siku membentuk sudut 45° dari tubuh 4. Dorong kembali ke atas dengan kuat 5. Jaga tubuh lurus dari kepala hingga tumit sepanjang gerakan Tips: Jaga siku tidak terlalu keluar. Fokus pada squeeze dada di puncak gerakan untuk hasil maksimal. Kalori yang terbakar sekitar 133 kcal per 30 menit untuk berat badan 70kg."
+    },
+    {
+      "query": "latihan untuk otot dada",
+      "coverage": 1,
+      "summary": "Dada (Chest) (Pectoralis Major & Minor) — Otot dada adalah otot besar yang mencakup seluruh bagian depan atas tubuh. Berfungsi untuk gerakan mendorong horizontal dan adduksi lengan. Latihan terbaik untuk melatihnya antara lain: Push Up, Bench Press, Chest Fly, Dips. Latih dada 2x seminggu. Variasikan sudut (incline, flat, decline) untuk melatih semua bagian dada."
+    },
+    {
+      "query": "berapa kalori squat 30 menit",
+      "coverage": 0.5,
+      "summary": "Barbell Squat memiliki nilai MET 6 dengan intensitas berat. Untuk berat badan 70kg, aktivitas ini membakar sekitar 210 kcal per 30 menit."
+    },
+    {
+      "query": "latihan punggung",
+      "coverage": 1,
+      "summary": "Punggung (Back) (Latissimus Dorsi & Rhomboids) — Punggung adalah grup otot terbesar kedua di tubuh. Terdiri dari lat (lebar), rhomboid (tengah), dan trapezius (atas). Latihan terbaik untuk melatihnya antara lain: Pull Up, Deadlift, Bent Over Row, Lat Pulldown. Jangan skip latihan punggung. Ketidakseimbangan dada-punggung adalah penyebab utama postur bungkuk."
+    },
+    {
+      "query": "protein berapa per hari",
+      "coverage": 0.6666666666666666,
+      "summary": "Protein mengandung 4 kcal per gram dan idealnya menyumbang sekitar 30% dari total kalori harian. Membangun dan memperbaiki otot. Target: 1.6–2.2g per kg berat badan untuk yang aktif berlatih."
+    },
+    {
+      "query": "latihan untuk pemula tanpa alat",
+      "coverage": 0.4,
+      "summary": "Push Up adalah latihan beginner untuk otot Dada. Gerakan dasar mendorong tubuh naik turun dengan tangan, melatih dada, bahu, dan trisep secara bersamaan. Cara melakukannya: 1. Posisi plank dengan tangan selebar bahu 2. Turunkan dada hingga hampir menyentuh lantai 3. Siku membentuk sudut 45° dari tubuh 4. Dorong kembali ke atas dengan kuat 5. Jaga tubuh lurus dari kepala hingga tumit sepanjang gerakan Tips: Jaga siku tidak terlalu keluar. Fokus pada squeeze dada di puncak gerakan untuk hasil maksimal. Kalori yang terbakar sekitar 133 kcal per 30 menit untuk berat badan 70kg."
+    },
+    {
+      "query": "cara menurunkan berat badan",
+      "coverage": 0.5,
+      "summary": "Deadlift memiliki nilai MET 6 dengan intensitas berat. Untuk berat badan 70kg, aktivitas ini membakar sekitar 210 kcal per 30 menit."
+    },
+    {
+      "query": "latihan bisep",
+      "coverage": 1,
+      "summary": "Bisep (Biceps) (Biceps Brachii & Brachialis) — Bisep bekerja melakukan fleksi siku dan supinasi lengan bawah. Bisep banyak terlatih saat latihan punggung. Latihan terbaik untuk melatihnya antara lain: Dumbbell Curl, Barbell Curl, Hammer Curl, Pull Up. Variasikan grip untuk melatih semua bagian bisep: supinasi untuk puncak bisep, netral (hammer) untuk brachialis."
+    },
+    {
+      "query": "tips hidrasi saat olahraga",
+      "coverage": 0.25,
+      "summary": "Tentang Hidrasi: 1. Minum 2-3 liter air per hari sebagai baseline 2. Tambahkan 500ml per jam latihan intensitas sedang 3. Urine berwarna kuning pucat = terhidrasi dengan baik"
+    },
+    {
+      "query": "MET lari 8 km per jam",
+      "coverage": 1,
+      "summary": "Lari 8 km/jam memiliki nilai MET 8.3 dengan intensitas sedang. Untuk berat badan 70kg, aktivitas ini membakar sekitar 291 kcal per 30 menit."
+    }
+  ]
+}
