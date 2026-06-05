@@ -260,13 +260,16 @@ export default {
 
   methods: {
     // ── Data Fetching ──
-    async fetchData(silent = false) {
+async fetchData(silent = false) {
       if (!silent) this.loading = true
       try {
+        const token = localStorage.getItem('calsio_token')
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}
+
         const [histRes, statsRes, userRes] = await Promise.allSettled([
-          axios.get(`${API_URL}/api/history`),
-          axios.get(`${API_URL}/api/history/stats`),
-          axios.get(`${API_URL}/api/users`),
+          axios.get(`${API_URL}/api/history`,       { headers }),
+          axios.get(`${API_URL}/api/history/stats`, { headers }),
+          axios.get(`${API_URL}/api/users`,         { headers }),
         ])
         if (histRes.status === 'fulfilled') {
           const newData = histRes.value.data || []
