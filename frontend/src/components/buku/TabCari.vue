@@ -133,9 +133,9 @@
 <script>
 import { search, formatForLLM, buildFallbackSummary } from '../../services/irService.js'
 
+const API_URL        = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
 const GEMINI_URL     = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`
-
 export default {
   name: 'TabCari',
 
@@ -232,7 +232,7 @@ async doBackendSearch(q) {
   try {
     const token = localStorage.getItem('calsio_token') || localStorage.getItem('access_token')
 
-    const response = await fetch('/api/rag/chat', {
+    const response = await fetch(`${API_URL}/api/rag/chat`, {
       method : 'POST',
       headers: {
         'Content-Type' : 'application/json',
