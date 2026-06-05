@@ -69,10 +69,21 @@ import {
   Title, Tooltip, Legend,
   BarElement, LineElement,
   CategoryScale, LinearScale, PointElement,
-  ArcElement, Filler
+  ArcElement, Filler,
+  DoughnutController,
+  BarController,
+  LineController
 } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, CategoryScale, LinearScale, PointElement, ArcElement, Filler)
+ChartJS.register(
+  Title, Tooltip, Legend,
+  BarElement, LineElement,
+  CategoryScale, LinearScale, PointElement,
+  ArcElement, Filler,
+  DoughnutController,
+  BarController,
+  LineController
+)
 
 export default {
   name: 'DashboardCharts',
