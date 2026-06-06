@@ -1,16 +1,166 @@
 <!DOCTYPE html>
 <html lang="id">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ── Primary Meta ── -->
     <title>Calsio — Workout Tracker</title>
+    <meta name="description" content="Track workouts, predict calories burned with ML, and monitor your fitness progress with Calsio." />
+    <meta name="author" content="Calsio" />
+    <meta name="keywords" content="workout tracker, calorie predictor, fitness app, home gym, calsio" />
 
-    <!-- Favicon SVG inline via data URI -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M16 2L28 9V23L16 30L4 23V9L16 2Z' stroke='%23eab308' stroke-width='1.5' stroke-linejoin='round' fill='%230d1117'/%3E%3Cpath d='M19 8L13 17H17.5L13 24L22 14H17L19 8Z' fill='%23eab308'/%3E%3C/svg%3E">
+    <!-- ── Theme ── -->
+    <meta name="theme-color" content="#eab308" />
+    <meta name="msapplication-TileColor" content="#080a0f" />
+    <meta name="color-scheme" content="dark" />
 
+    <!-- ── PWA ── -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Calsio" />
+
+    <!-- ── Favicon (SVG inline, no extra file needed) ── -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='32' height='32' rx='6' fill='%230d1117'/%3E%3Cpath d='M16 2L28 9V23L16 30L4 23V9L16 2Z' stroke='%23eab308' stroke-width='1.5' stroke-linejoin='round' fill='rgba(234%2C179%2C8%2C0.06)'/%3E%3Cpath d='M19 8L13 17H17.5L13 24L22 14H17L19 8Z' fill='%23eab308'/%3E%3C/svg%3E" />
+    <!-- Fallback PNG (letakkan file icon-192.png di /public/icons/) -->
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- ── Open Graph (WA / sosmed preview) ── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="Calsio — Workout Tracker" />
+    <meta property="og:description" content="Track workouts, predict calories burned with ML, and monitor your fitness progress." />
+    <meta property="og:image"       content="/og-image.png" />
+    <meta property="og:url"         content="https://calsio.app" />
+    <meta property="og:site_name"   content="Calsio" />
+
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Calsio — Workout Tracker" />
+    <meta name="twitter:description" content="Track workouts, predict calories burned with ML." />
+    <meta name="twitter:image"       content="/og-image.png" />
+
+    <!-- ── Splash / Loading Screen ── -->
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: #080a0f;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      #splash.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(1.04);
+      }
+
+      .splash-logo {
+        animation: splash-pulse 1.8s ease-in-out infinite;
+        filter: drop-shadow(0 0 24px rgba(234,179,8,0.5));
+      }
+
+      @keyframes splash-pulse {
+        0%, 100% { filter: drop-shadow(0 0 16px rgba(234,179,8,0.4)); transform: scale(1); }
+        50%       { filter: drop-shadow(0 0 36px rgba(234,179,8,0.8)); transform: scale(1.06); }
+      }
+
+      .splash-wordmark {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        color: #eab308;
+        text-transform: uppercase;
+      }
+
+      .splash-sub {
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        color: rgba(255,255,255,0.25);
+        text-transform: uppercase;
+        margin-top: -12px;
+      }
+
+      .splash-bar-wrap {
+        width: 120px;
+        height: 2px;
+        background: rgba(255,255,255,0.07);
+        border-radius: 99px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+
+      .splash-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #eab308, #facc15);
+        border-radius: 99px;
+        animation: splash-load 1.6s ease-in-out forwards;
+      }
+
+      @keyframes splash-load {
+        0%   { width: 0%; }
+        60%  { width: 75%; }
+        100% { width: 100%; }
+      }
+
+      /* Grid background on splash */
+      #splash::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(234,179,8,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(234,179,8,0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+    </style>
   </head>
+
   <body>
+
+    <!-- ── Splash Screen ── -->
+    <div id="splash">
+      <svg class="splash-logo" width="64" height="64" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="#eab308" stroke-width="1.2" stroke-linejoin="round" fill="rgba(234,179,8,0.08)"/>
+        <path d="M19 8L13 17H17.5L13 24L22 14H17L19 8Z" fill="#eab308"/>
+      </svg>
+      <div class="splash-wordmark">CALSIO</div>
+      <div class="splash-sub">Workout Tracker</div>
+      <div class="splash-bar-wrap">
+        <div class="splash-bar"></div>
+      </div>
+    </div>
+
+    <!-- ── Vue App ── -->
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+
+    <!-- ── Splash hide logic ── -->
+    <script>
+      window.addEventListener('load', function () {
+        // Tunggu 1.8 detik (sesuai animasi bar) lalu fade out splash
+        setTimeout(function () {
+          var splash = document.getElementById('splash')
+          if (splash) {
+            splash.classList.add('hidden')
+            setTimeout(function () { splash.remove() }, 520)
+          }
+        }, 1800)
+      })
+    </script>
+
   </body>
 </html>
