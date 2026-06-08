@@ -24,7 +24,7 @@ const History = sequelize.define('History', {
   UserId: {
     type     : DataTypes.INTEGER,
     allowNull: true
-  }
+  },
   deleted_by: {
     type      : DataTypes.INTEGER,
     allowNull : true,
