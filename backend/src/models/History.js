@@ -25,6 +25,12 @@ const History = sequelize.define('History', {
     type     : DataTypes.INTEGER,
     allowNull: true
   }
+  deleted_by: {
+    type      : DataTypes.INTEGER,
+    allowNull : true,
+    references: { model: 'admins', key: 'id' },
+    onDelete  : 'SET NULL',
+  }
 }, {
   tableName: 'histories'
 });

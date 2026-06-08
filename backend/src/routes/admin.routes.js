@@ -95,21 +95,21 @@ router.get('/users', adminAuth, async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/admin/users/:id
 // ─────────────────────────────────────────────────────────────────────────────
-router.delete('/users/:id', adminAuth, async (req, res) => {
+router.delete('/history/:id', adminAuth, async (req, res) => {
   try {
     const { id } = req.params
+    const adminId = req.admin.id
 
-    const user = await User.findByPk(id)
-    if (!user) return res.status(404).json({ message: 'User tidak ditemukan' })
+    const h = await History.findByPk(id)
+    if (!h) return res.status(404).json({ message: 'Riwayat tidak ditemukan' })
 
-    // Hapus history dulu karena ada foreign key
-    await History.destroy({ where: { UserId: id } })
-    await User.destroy({ where: { id } })
+    await h.update({ deleted_by: adminId })
+    await h.destroy()
 
-    return res.json({ message: 'User berhasil dihapus' })
+    return res.json({ message: 'Riwayat berhasil dihapus' })
   } catch (err) {
-    console.error('[Admin] DELETE /users error:', err.message)
-    return res.status(500).json({ message: 'Gagal menghapus user' })
+    console.error('[Admin] DELETE /history error:', err.message)
+    return res.status(500).json({ message: 'Gagal menghapus riwayat' })
   }
 })
 
