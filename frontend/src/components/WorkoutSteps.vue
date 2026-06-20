@@ -73,12 +73,12 @@
                 @click="$emit('select-exercise', ex)"
                 :class="['ex-btn', selectedExercise?.name === ex.name ? 'active' : '', 'fav']"
               >
-                <div class="ex-btn-top">
-                  <span class="ex-icon" v-html="getExerciseIcon(ex.workoutType)"></span>
-                  <button class="fav-star active" @click.stop="toggleFavorite(ex.name)" title="Hapus dari favorit">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  </button>
-                </div>
+<div class="ex-btn-top">
+  <span class="ex-icon" v-html="getExerciseIcon(ex.workoutType)"></span>
+  <button class="fav-star active" @click.stop="toggleFavorite(ex.name)" title="Hapus dari favorit">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="#eab308" stroke="#eab308" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  </button>
+</div>
                 <span class="ex-name">{{ ex.name }}</span>
                 <span class="ex-type-tag" :style="{ '--tag-color': workoutTypeColor(ex.workoutType) }">{{ ex.workoutType }}</span>
               </button>
@@ -166,8 +166,11 @@
         <div v-if="selectedExercise && step4View === 'detail'" class="panel-detail">
 
           <!-- Exercise name strip -->
-          <div class="ex-name-strip">
-            <span class="ex-strip-icon" v-html="getExerciseIcon(selectedExercise.workoutType)"></span>
+         <div class="ex-name-strip">
+  <div class="ex-strip-thumb">
+    <img :src="selectedExercise.image" :alt="selectedExercise.name" class="ex-thumb-img" @error="onImgError" />
+    <span class="ex-strip-icon ex-icon-fallback" v-html="getExerciseIcon(selectedExercise.workoutType)"></span>
+  </div>
             <div class="ex-strip-info">
               <span class="ex-strip-name">{{ selectedExercise.name }}</span>
               <span class="ex-strip-type" :style="{ '--tag-color': workoutTypeColor(selectedExercise.workoutType) }">{{ selectedExercise.workoutType }}</span>
@@ -452,6 +455,10 @@ export default {
     getExerciseIcon(t) { return ic[t?.toLowerCase()] || ic.strength },
     workoutTypeColor(t){ return { Strength: '#60a5fa', Cardio: '#34d399', HIIT: '#f87171', Yoga: '#a78bfa' }[t] || '#eab308' },
     getAvgBpm(v)       { return Math.round(this.userProfile.maxBpm * (INTENSITY_BPM[v] || 0.85)) },
+
+    onImgError(e) {
+  e.target.classList.add('img-error')
+},
 
     getCategoryCount(key) {
       if (!this.selectedEquipment) return 0
@@ -743,6 +750,61 @@ export default {
 /* Empty hint */
 .empty-hint { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 20px; text-align: center; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.06); border-radius: 14px; color: rgba(255,255,255,0.2); font-size: 0.8rem; }
 .eh-icon { opacity: 0.5; }
+
+.ex-thumb {
+  width: 100%;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  position: relative;
+}
+.ex-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ex-thumb-img.img-error { display: none; }
+.ex-icon-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+.ex-thumb:has(.img-error) .ex-icon-fallback { display: flex; }
+
+.ex-name-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 18px;
+  background: rgba(234,179,8,0.06);
+  border: 1px solid rgba(234,179,8,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ex-strip-thumb {
+  width: 100%;
+  height: 160px;
+  position: relative;
+  background: rgba(255,255,255,0.03);
+}
+
+.ex-strip-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+}
 
 /* ═══════════════════════════════════════════════
    STEP 04: DETAIL EMPTY STATE

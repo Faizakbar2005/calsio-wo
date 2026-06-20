@@ -7,6 +7,21 @@
 const ic = (body, size = 48) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
 
+// ─── Image slug helper ──────────────────────────────────────
+// Auto-generate path gambar dari nama exercise.
+// "Push-Up" -> "/images/exercises/pushup.png"
+// "DB Chest Press" -> "/images/exercises/dbchestpress.png"
+// "Lompat Tali (Tanpa Tali)" -> "/images/exercises/lompattalitanpatali.png"
+// Taruh file PNG/JPG/WebP di public/images/exercises/ dengan nama hasil slug ini.
+// Jika file tidak ada, UI akan otomatis fallback ke ikon SVG bawaan (lihat WorkoutSteps.vue).
+const slugify = (name) =>
+  name
+    .toLowerCase()
+    .replace(/[()]/g, '')
+    .replace(/[^a-z0-9]+/g, '')
+
+const imgPath = (name) => `/images/exercises/${slugify(name)}.png`
+
 // ─── Muscle Icons ────────────────────────────────────────────
 export const muscleIcons = {
   Dada    : ic(`<path d="M8 16 Q10 8 24 12 Q38 8 40 16 L40 30 Q36 38 24 35 Q12 38 8 30 Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.8"/><line x1="24" y1="12" x2="24" y2="35" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M10 20 Q14 17 20 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M38 20 Q34 17 28 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`),
@@ -926,9 +941,12 @@ export const WITH_DUMBBELL = [
 ]
 
 // ──────────────────────────────────────────────────────────────
-//  MERGED EXPORT
+//  MERGED EXPORT (sekarang termasuk field `image`)
 // ──────────────────────────────────────────────────────────────
-export const HOME_GYM_EXERCISES = [...NO_EQUIPMENT, ...WITH_DUMBBELL]
+export const HOME_GYM_EXERCISES = [...NO_EQUIPMENT, ...WITH_DUMBBELL].map(e => ({
+  ...e,
+  image: imgPath(e.name),
+}))
 
 // ──────────────────────────────────────────────────────────────
 //  HELPERS untuk TabGerakan & bukuData compatibility
@@ -944,6 +962,7 @@ const MUSCLE_DISPLAY = {
 }
 
 // Export format yang kompatibel dengan TabGerakan (field `muscle` string)
+// `image` ikut terbawa karena spread dari HOME_GYM_EXERCISES
 export const exercises = HOME_GYM_EXERCISES.map(e => ({
   ...e,
   muscle: MUSCLE_DISPLAY[e.muscles[0]] || e.muscles[0],
