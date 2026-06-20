@@ -18,8 +18,8 @@
 
         <!-- Hero -->
         <div class="modal-hero">
-          <div class="hero-icon-wrap" :style="{ background: exercise.color + '12', color: exercise.color }">
-            <span v-html="exercise.icon"></span>
+          <div class="hero-icon-wrap" :style="{ background: exercise.color + '12' }">
+            <img :src="exercise.icon" :alt="exercise.name" class="hero-icon-img" />
           </div>
           <div class="hero-info">
             <div class="hero-badges">
@@ -183,8 +183,14 @@ export default {
 .hero-icon-wrap {
   width: 68px; height: 68px; border-radius: 18px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
 }
-.hero-icon-wrap :deep(svg) { width: 40px; height: 40px; }
+.hero-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 
 .hero-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 .ex-tag {

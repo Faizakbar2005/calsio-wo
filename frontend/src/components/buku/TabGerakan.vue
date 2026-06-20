@@ -50,7 +50,9 @@
 
         <!-- Illustration -->
         <div class="ex-illus" :style="{ background: ex.color + '0d' }">
-          <div class="ex-icon" :style="{ color: ex.color }" v-html="ex.icon"></div>
+          <div class="ex-icon">
+            <img :src="ex.icon" :alt="ex.name" class="ex-icon-img" />
+          </div>
           <div class="ex-difficulty" :class="ex.level">{{ levelLabel[ex.level] }}</div>
         </div>
 
@@ -67,7 +69,7 @@
 
           <div class="ex-tags">
             <span class="ex-tag muscle" :style="{ color: ex.color, background: ex.color + '12', borderColor: ex.color + '25' }">
-              <span class="tag-icon" v-html="ex.muscleIcon" :style="{ color: ex.color }"></span>
+              <span class="tag-icon" v-html="ex.muscleIcon"></span>
               {{ ex.muscle }}
             </span>
             <span class="ex-tag equip">{{ ex.equipment }}</span>
@@ -247,20 +249,28 @@ export default {
 .exercise-card:hover .ex-accent { opacity: 1; }
 
 .ex-illus {
-  height: 118px;
+  height: 160px;        /* naik dari 118px */
   display: flex; align-items: center; justify-content: center;
   position: relative;
+  overflow: hidden;
   transition: background 0.25s;
 }
+
+/* PNG icon */
 .ex-icon {
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0.8;
-  transition: transform 0.25s ease, opacity 0.25s;
+  width: 100%;
+  height: 100%;
 }
-.exercise-card:hover .ex-icon {
-  transform: scale(1.1);
-  opacity: 1;
-  filter: drop-shadow(0 0 10px currentColor);
+
+.ex-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;  /* ← fokus ke bagian atas/tengah gambar */
+  transition: transform 0.25s ease;
+}
+.exercise-card:hover .ex-icon-img {
+  transform: scale(1.06);
 }
 
 .ex-difficulty {
@@ -302,7 +312,6 @@ export default {
   text-transform: uppercase; letter-spacing: 0.06em;
   padding: 4px 10px; border-radius: 6px; border: 1px solid;
 }
-.ex-tag.muscle { }
 .ex-tag.equip {
   background: rgba(255,255,255,0.03);
   border-color: rgba(255,255,255,0.07);

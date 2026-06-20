@@ -36,8 +36,8 @@
           </div>
         </div>
         <div class="formula-example">
-          Push Up (3.8) × 70 kg × 0.5h
-          <span class="fe-result">= 133 kcal</span>
+          {{ formulaExampleRow.name }} ({{ formulaExampleRow.met }}) × 70 kg × 0.5h
+          <span class="fe-result">= {{ formulaExampleKcal }} kcal</span>
         </div>
       </div>
     </div>
@@ -80,11 +80,24 @@
         <div class="mc-accent"></div>
 
         <div class="mc-top">
-          <div class="mc-name-group">
-            <div class="mc-name">{{ row.name }}</div>
-            <div class="mc-badges">
-              <span class="mc-badge cat">{{ row.category }}</span>
-              <span class="mc-badge intensity" :class="row.intensity">{{ row.intensity }}</span>
+          <div class="mc-left">
+            <div class="mc-thumb">
+              <img
+                v-if="exerciseIcons[row.name] && !imgErrors[row.name]"
+                :src="exerciseIcons[row.name]"
+                :alt="row.name"
+                class="mc-thumb-img"
+                loading="lazy"
+                @error="onImgError(row.name)"
+              />
+              <span v-else class="mc-thumb-fallback">{{ row.name.charAt(0) }}</span>
+            </div>
+            <div class="mc-name-group">
+              <div class="mc-name">{{ row.name }}</div>
+              <div class="mc-badges">
+                <span class="mc-badge cat">{{ row.category }}</span>
+                <span class="mc-badge intensity" :class="row.intensity">{{ row.intensity }}</span>
+              </div>
             </div>
           </div>
           <div class="mc-kcal">
@@ -114,12 +127,18 @@
 </template>
 
 <script>
-import { metData, metCategories } from '../../services/bukuData.js'
+import { metData, metCategories, exerciseIcons } from '../../services/bukuData.js'
 
 export default {
   name: 'TabMet',
   data() {
-    return { metFilter: '', metData, metCategories }
+    return {
+      metFilter: '',
+      metData,
+      metCategories,
+      exerciseIcons,
+      imgErrors: {}, // { [exerciseName]: true } -> fallback ke huruf inisial jika foto gagal dimuat
+    }
   },
   computed: {
     filteredMet() {
@@ -128,6 +147,14 @@ export default {
     },
     maxMet() {
       return Math.max(...this.metData.map(d => d.met))
+    },
+    // Contoh rumus di hero diambil langsung dari bukuData.js (Push Up),
+    // jadi otomatis sinkron kalau nilai MET-nya diubah di sana.
+    formulaExampleRow() {
+      return this.metData.find(m => m.name === 'Push Up') || this.metData[0]
+    },
+    formulaExampleKcal() {
+      return Math.round(this.formulaExampleRow.met * 70 * 0.5)
     }
   },
   methods: {
@@ -135,6 +162,9 @@ export default {
       if (val < 4) return '#22c55e'
       if (val < 7) return '#eab308'
       return '#ef4444'
+    },
+    onImgError(name) {
+      this.imgErrors = { ...this.imgErrors, [name]: true }
     }
   }
 }
@@ -236,7 +266,7 @@ export default {
 /* ── Met Grid ── */
 .met-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(252px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
   gap: 11px;
 }
 
@@ -265,7 +295,25 @@ export default {
 
 /* Card top */
 .mc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.mc-name-group { display: flex; flex-direction: column; gap: 8px; }
+.mc-left { display: flex; align-items: flex-start; gap: 12px; min-width: 0; flex: 1; }
+
+/* Thumbnail foto latihan (sumber: exerciseIcons di bukuData.js) */
+.mc-thumb {
+  width: 50px; height: 50px; border-radius: 12px;
+  overflow: hidden; flex-shrink: 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid color-mix(in srgb, var(--mc, rgba(255,255,255,0.15)) 45%, transparent);
+  display: flex; align-items: center; justify-content: center;
+}
+.mc-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mc-thumb-fallback {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.15rem; font-weight: 900;
+  color: var(--mc, #eab308);
+  opacity: 0.75;
+}
+
+.mc-name-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .mc-name {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 0.98rem; font-weight: 900;
@@ -327,5 +375,6 @@ export default {
 }
 @media (max-width: 420px) {
   .met-grid { grid-template-columns: 1fr; }
+  .mc-thumb { width: 44px; height: 44px; }
 }
 </style>
