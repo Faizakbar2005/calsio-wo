@@ -127,6 +127,20 @@
         pointer-events: none;
       }
     </style>
+
+    <!--
+      ── Splash Skip Logic (inline di <head>, sebelum render) ──
+      Kalau splash sudah ditampilkan di sesi ini, sembunyikan elemen
+      splash secepat mungkin — sebelum browser sempat render/paint.
+    -->
+    <script>
+      if (sessionStorage.getItem('splashShown')) {
+        document.addEventListener('DOMContentLoaded', function () {
+          var splash = document.getElementById('splash')
+          if (splash) splash.remove()
+        })
+      }
+    </script>
   </head>
 
   <body>
@@ -148,18 +162,27 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
 
-    <!-- ── Splash hide logic ── -->
+    <!-- ── Splash Hide Logic ── -->
     <script>
-      window.addEventListener('load', function () {
-        // Tunggu 1.8 detik (sesuai animasi bar) lalu fade out splash
-        setTimeout(function () {
-          var splash = document.getElementById('splash')
-          if (splash) {
-            splash.classList.add('hidden')
-            setTimeout(function () { splash.remove() }, 520)
-          }
-        }, 1800)
-      })
+      (function () {
+        // Kalau sudah pernah tampil di sesi ini, skip
+        if (sessionStorage.getItem('splashShown')) return
+
+        window.addEventListener('load', function () {
+          // Tunggu 1.8 detik (sesuai animasi bar) lalu fade out splash
+          setTimeout(function () {
+            var splash = document.getElementById('splash')
+            if (splash) {
+              splash.classList.add('hidden')
+              setTimeout(function () {
+                splash.remove()
+                // Tandai bahwa splash sudah ditampilkan di sesi ini
+                sessionStorage.setItem('splashShown', '1')
+              }, 520)
+            }
+          }, 1800)
+        })
+      })()
     </script>
 
   </body>

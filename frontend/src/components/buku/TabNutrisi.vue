@@ -20,31 +20,32 @@
         class="makro-card"
         :style="{ '--accent': makro.color }"
       >
+        <!-- Top accent line -->
         <div class="makro-accent-bar"></div>
-        <div class="makro-glow"></div>
 
-        <div class="makro-header">
-          <div class="makro-icon-wrap" :style="{ background: makro.color + '12', border: `1px solid ${makro.color}25`, color: makro.color }">
-            <span v-html="makro.icon"></span>
-          </div>
+        <!-- Photo Banner -->
+        <div class="makro-banner">
+          <img :src="makro.icon" :alt="makro.name" class="makro-banner-img" />
+          <div class="makro-banner-overlay"></div>
           <div class="makro-pct" :style="{ color: makro.color }">
             <span class="makro-pct-num">{{ makro.pct }}</span>
             <span class="makro-pct-unit">%</span>
           </div>
         </div>
 
-        <div class="makro-name-row">
-          <h3 class="makro-name">{{ makro.name }}</h3>
-          <span class="makro-kcal">{{ makro.kcalPerGram }} kcal/g</span>
-        </div>
+        <!-- Body -->
+        <div class="makro-body">
+          <div class="makro-name-row">
+            <h3 class="makro-name">{{ makro.name }}</h3>
+            <span class="makro-kcal">{{ makro.kcalPerGram }} kcal/g</span>
+          </div>
 
-        <div class="makro-bar-wrap">
           <div class="makro-bar-track">
             <div class="makro-bar-fill" :style="{ width: makro.pct + '%', background: makro.color }"></div>
           </div>
-        </div>
 
-        <p class="makro-desc">{{ makro.desc }}</p>
+          <p class="makro-desc">{{ makro.desc }}</p>
+        </div>
       </div>
     </div>
 
@@ -139,51 +140,67 @@ export default {
 .makro-card {
   background: #0c0f18;
   border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px; padding: 24px;
-  display: flex; flex-direction: column; gap: 16px;
-  position: relative; overflow: hidden;
-  transition: border-color 0.25s ease, transform 0.25s ease;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
   cursor: default;
 }
 .makro-card:hover {
   border-color: var(--accent, rgba(255,255,255,0.14));
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
 }
-.makro-card:hover .makro-glow { opacity: 1; }
-.makro-card:hover .makro-accent-bar { opacity: 0.9; }
 
 .makro-accent-bar {
-  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0.45; transition: opacity 0.25s;
+  opacity: 0.6; transition: opacity 0.25s;
 }
-.makro-glow {
-  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-  width: 180px; height: 120px;
-  background: radial-gradient(ellipse at center, var(--accent) 0%, transparent 70%);
-  opacity: 0; transition: opacity 0.4s; pointer-events: none;
+.makro-card:hover .makro-accent-bar { opacity: 1; }
+
+/* ── Banner foto ── */
+.makro-banner {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+.makro-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+.makro-card:hover .makro-banner-img {
+  transform: scale(1.05);
+}
+.makro-banner-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, #0c0f18 100%);
 }
 
-.makro-header {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-}
-.makro-icon-wrap {
-  width: 46px; height: 46px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-}
-.makro-icon-wrap :deep(svg) { width: 26px; height: 26px; }
-
+/* Persentase di atas foto pojok kanan bawah */
 .makro-pct {
+  position: absolute; bottom: 12px; right: 16px;
   display: flex; align-items: baseline; gap: 2px;
-  text-align: right;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
 }
 .makro-pct-num {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 2rem; font-weight: 900; line-height: 1;
+  font-size: 2.4rem; font-weight: 900; line-height: 1;
 }
 .makro-pct-unit {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1rem; font-weight: 700; opacity: 0.6;
+  font-size: 1.1rem; font-weight: 700; opacity: 0.8;
+}
+
+/* ── Body ── */
+.makro-body {
+  padding: 18px 20px 22px;
+  display: flex; flex-direction: column; gap: 12px;
 }
 
 .makro-name-row {
@@ -191,14 +208,13 @@ export default {
 }
 .makro-name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.1rem; font-weight: 900;
+  font-size: 1.2rem; font-weight: 900;
   text-transform: uppercase; letter-spacing: 0.08em; color: #fff;
 }
 .makro-kcal {
   font-size: 0.7rem; color: rgba(255,255,255,0.22); white-space: nowrap;
 }
 
-.makro-bar-wrap { }
 .makro-bar-track {
   height: 4px; background: rgba(255,255,255,0.06);
   border-radius: 999px; overflow: hidden;
@@ -209,7 +225,7 @@ export default {
   font-size: 0.79rem; color: rgba(255,255,255,0.38);
   line-height: 1.68;
   border-top: 1px solid rgba(255,255,255,0.05);
-  padding-top: 14px;
+  padding-top: 12px;
 }
 
 /* ── Tips Grid ── */

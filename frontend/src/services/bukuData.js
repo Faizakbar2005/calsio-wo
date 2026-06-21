@@ -243,27 +243,9 @@ const nutrisiIcons = {
 
 // ─── Makronutrien Icons ──────────────────────────────────────────────────────
 const makroIcons = {
-  Protein: icon(`
-    <path d="M14 28 Q10 20 14 14 Q18 8 24 10 Q30 8 34 14 Q38 20 34 28 Q30 36 24 38 Q18 36 14 28Z"
-      fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2"/>
-    <path d="M18 18 Q22 14 28 18 Q32 22 28 28 Q24 32 20 28 Q16 24 18 18Z"
-      fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.5"/>
-    <line x1="28" y1="10" x2="34" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  `),
-  Karbohidrat: icon(`
-    <path d="M8 22 Q8 14 24 14 Q40 14 40 22 L36 34 Q32 40 24 40 Q16 40 12 34 Z"
-      fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2"/>
-    <path d="M8 22 Q24 28 40 22" stroke="currentColor" stroke-width="1.5" fill="none"/>
-    <path d="M16 10 Q18 6 20 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
-    <path d="M22 8 Q24 4 26 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
-    <path d="M28 10 Q30 6 32 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
-  `),
-  Lemak: icon(`
-    <path d="M24 6 Q34 14 34 26 Q34 38 24 42 Q14 38 14 26 Q14 14 24 6Z"
-      fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="2"/>
-    <ellipse cx="24" cy="30" rx="7" ry="9" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="1.5"/>
-    <circle cx="24" cy="30" r="4" fill="currentColor" fill-opacity="0.4"/>
-  `),
+  Protein:     '/images/makro/protein.png',
+  Karbohidrat: '/images/makro/karbohidrat.png',
+  Lemak:       '/images/makro/lemak.png',
 }
 
 // ─── Exercises Data ──────────────────────────────────────────────────────────
