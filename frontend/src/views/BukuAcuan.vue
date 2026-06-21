@@ -18,7 +18,7 @@
         </div>
         <div class="page-stats">
           <div class="ps-item">
-            <span class="ps-num">12</span>
+            <span class="ps-num">90</span>
             <span class="ps-label">Gerakan</span>
           </div>
           <div class="ps-div"></div>
@@ -102,7 +102,7 @@ export default {
         {
           id   : 'gerakan',
           label: 'Gerakan',
-          badge: '12',
+          badge: '90',
           color: '#60a5fa',
           svg  : svg(`<path d="M6 4v16M18 4v16M4 8h4M16 8h4M4 16h4M16 16h4"/>`)
         },
@@ -123,7 +123,7 @@ export default {
         {
           id   : 'met',
           label: 'Kalori MET',
-          badge: '26',
+          badge: '90',
           color: '#a78bfa',
           svg  : svg(`<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>`)
         },

@@ -851,7 +851,18 @@ export default {
   border: 1px solid rgba(234,179,8,0.15);
   border-radius: 10px;
 }
-.ex-strip-icon { display: flex; color: #eab308; flex-shrink: 0; }
+.ex-strip-icon.ex-icon-fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  color: #eab308;
+}
+
+.ex-strip-thumb:has(.img-error) .ex-strip-icon.ex-icon-fallback {
+  display: flex;
+}
 .ex-strip-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .ex-strip-name {
   font-family: 'Barlow Condensed', sans-serif;

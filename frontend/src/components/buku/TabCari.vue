@@ -153,14 +153,11 @@ export default {
       useBackend: false,
 
       suggestions: [
-        'cara push up yang benar',
-        'latihan untuk pemula',
-        'nutrisi setelah workout',
-        'kalori squat 30 menit',
-        'otot dada latihan apa',
-        'MET lari vs bersepeda',
-        'protein berapa per hari',
-        'latihan tanpa alat'
+        'Cara push up yang benar',
+        'Kalori saya hari ini',
+        'Otot dada latihannya apa',
+        'Jenis latihan yang telah saya lakukan minggu ini apa?',
+        'Latihan tanpa alat'
       ]
     }
   },

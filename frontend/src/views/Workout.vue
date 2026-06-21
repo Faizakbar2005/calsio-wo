@@ -97,7 +97,8 @@ import WorkoutBodyVisualizer from '../components/WorkoutBodyVisualizer.vue'
 import WorkoutToast          from '../components/WorkoutToast.vue'
 import CaloriePredictModal   from './CaloriePredictModal.vue'
 import { HOME_GYM_EXERCISES, NO_EQUIPMENT, WITH_DUMBBELL } from '../data/homeGymExercises.js'
-import { getMETFactor } from '../utils/metConstants.js'
+
+import { getMETFactor, getVolumeFactor } from '../utils/metConstants.js'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
@@ -255,10 +256,11 @@ export default {
         const res = await axios.post(`${API_URL}/api/calories/predict`, payload)
 
         if (res.data.success === true || res.data.success === 'true') {
-          const base      = res.data.data.caloriesBurned
-          const metFactor = getMETFactor(this.selectedExercise.muscles[0], this.selectedExercise.workoutType)
-
-          this.calories          = Math.round(base * metFactor)
+          const base         = res.data.data.caloriesBurned
+          const metFactor    = getMETFactor(this.selectedExercise.muscles[0], this.selectedExercise.workoutType)
+          const volumeFactor = getVolumeFactor(this.sets, this.reps)
+ 
+          this.calories          = Math.round(base * metFactor * volumeFactor)
           this.featureImportance = [...(res.data.data.featureImportance || [])]
         } else {
           throw new Error(res.data.message || 'Prediksi gagal')
@@ -279,7 +281,9 @@ export default {
 
     _fallback() {
       const met = this.selectedExercise?.met || ({ low: 3.5, medium: 6.5, high: 10 }[this.intensity] || 6.5)
-      return Math.round(met * this.userProfile.weight * (this.duration / 60))
+      const baseCalories  = met * this.userProfile.weight * (this.duration / 60)
+      const volumeFactor  = getVolumeFactor(this.sets, this.reps)
+      return Math.round(baseCalories * volumeFactor)
     },
 
     async saveSession() {

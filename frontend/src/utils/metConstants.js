@@ -46,3 +46,50 @@ export function getMETFactor(muscleGroup, workoutType) {
   // Batasi faktor antara 0.7 - 1.4 agar tidak terlalu ekstrem
   return Math.min(Math.max(factor, 0.7), 1.4)
 }
+
+// ─────────────────────────────────────────────────────────────
+// Volume Factor — koreksi berdasarkan Sets x Reps
+//
+// Model GBR (ml-service/app.py) dilatih TANPA fitur sets/reps,
+// sehingga jumlah repetisi latihan tidak tertangkap dalam prediksi.
+// Volume factor ini menutup gap tersebut sebagai post-processing,
+// di luar model — sejalan dengan pendekatan getMETFactor() di atas.
+//
+// Referensi:
+// Lytle, J.R., Kravits, D.M., Martin, S.E., Green, J.S., Crouse, S.F.,
+// & Lambert, B.S. (2019). Predicting energy expenditure of an acute
+// resistance exercise bout in men and women.
+// Medicine & Science in Sports & Exercise, 51(7), 1532–1537.
+// DOI: 10.1249/MSS.0000000000001925
+//
+// Studi ini menghitung Total Volume (TV = sets x reps x beban) dan
+// membuktikan TV berkontribusi signifikan terhadap total energy
+// expenditure, diukur langsung via indirect calorimetry (VO2).
+// Protokol standar pada studi: 2-3 set x 8-12 repetisi.
+// ─────────────────────────────────────────────────────────────
+
+// Baseline volume standar: 3 set x 12 rep = 36
+// (titik tengah dari protokol 2-3 set x 8-12 rep pada Lytle et al., 2019)
+export const BASELINE_VOLUME = 3 * 12
+
+/**
+ * Hitung faktor koreksi volume latihan (sets x reps)
+ * Formula: (sets x reps) / BASELINE_VOLUME
+ *
+ * Referensi:
+ * Lytle, Kravits, et al. (2019). DOI: 10.1249/MSS.0000000000001925
+ *
+ * @param {number} sets - jumlah set
+ * @param {number} reps - jumlah repetisi per set
+ * @returns {number} faktor koreksi (0.5 – 2.5)
+ */
+export function getVolumeFactor(sets, reps) {
+  if (!sets || !reps) return 1.0  // tidak ada data -> tidak ada koreksi
+
+  const volume = sets * reps
+  const factor = volume / BASELINE_VOLUME
+
+  // Batasi faktor antara 0.5 - 2.5 agar tidak terlalu ekstrem
+  // (mis. user input 10 set x 50 rep tidak melonjak 13x lipat)
+  return Math.min(Math.max(factor, 0.5), 2.5)
+}
